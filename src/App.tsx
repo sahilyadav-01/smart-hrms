@@ -125,7 +125,7 @@ const navItems: { label: Page; icon: typeof LayoutGrid }[] = [
 
 function App() {
   const [user, setUser] = useState<AuthUser | null>(() => authService.current())
-  const [activeRole, setActiveRole] = useState<RoleType>(() => (authService.current()?.role as RoleType) || 'HR_ADMIN')
+  const activeRole: RoleType = (user?.role as RoleType) || 'EMPLOYEE'
   const [isBackendConnected, setIsBackendConnected] = useState(false)
   const [dashboardMetrics, setDashboardMetrics] = useState<{
     employees: number
@@ -222,7 +222,7 @@ function App() {
     return () => window.removeEventListener('session-expired', expire)
   }, [])
 
-  if (!user) return <LoginPage onLogin={u => { setUser(u); setActiveRole((u.role as RoleType) || 'HR_ADMIN') }} />
+  if (!user) return <LoginPage onLogin={u => setUser(u)} />
 
   const signOut = async () => {
     await authService.logout()
@@ -411,23 +411,14 @@ function App() {
 
           <div className="header-actions">
             {/* Live Backend Connection Indicator */}
-            <div className="connection-badge" title="Live SQLite Backend & API">
-              <span className={`pulse-dot ${isBackendConnected ? 'live' : 'demo'}`} />
-              <span>{isBackendConnected ? 'Real App (Live SQLite)' : 'Demo Mode'}</span>
+            <div className="connection-badge" title="CISPL Enterprise Backend & SQLite Database">
+              <span className={`pulse-dot ${isBackendConnected ? 'live' : 'offline'}`} />
+              <span>{isBackendConnected ? 'CISPL Enterprise System (Connected)' : 'Connecting to Server...'}</span>
             </div>
 
-            {/* Dynamic Role Switcher Pill */}
-            <div className="role-badge" title="Switch viewpoint">
-              <span>View:</span>
-              <select
-                value={activeRole}
-                onChange={e => setActiveRole(e.target.value as RoleType)}
-              >
-                <option value="SUPER_ADMIN">👑 Super Admin (Master)</option>
-                <option value="HR_ADMIN">🧑‍💼 HR Admin (People Ops)</option>
-                <option value="MANAGER">👨‍💼 Manager (Team Hub)</option>
-                <option value="EMPLOYEE">👤 Employee (Personal)</option>
-              </select>
+            {/* Authenticated User Role Badge */}
+            <div className="role-badge" title="Authenticated Account Role">
+              <span>{roleNameMap[activeRole] || activeRole}</span>
             </div>
 
             <button className="icon-btn" onClick={() => setPage('Notifications')} aria-label="Notifications">
@@ -445,6 +436,7 @@ function App() {
                 leaveRequests={leaveRequests}
                 dashboardMetrics={dashboardMetrics}
                 onNavigate={p => setPage(p)}
+                user={user}
               />
             ) : activeRole === 'HR_ADMIN' ? (
               <HrDashboard
@@ -756,7 +748,7 @@ function EmployeeHomeScreen({
    2A. SUPER ADMIN DASHBOARD
    ========================================================================== */
 function SuperAdminDashboard({
-  employees, leaveRequests, dashboardMetrics, onNavigate,
+  employees, leaveRequests, dashboardMetrics, onNavigate, user,
 }: {
   employees: Employee[]
   leaveRequests: LeaveReq[]
@@ -769,15 +761,17 @@ function SuperAdminDashboard({
     attendanceRate: number
   } | null
   onNavigate: (p: Page) => void
+  user?: AuthUser | null
 }) {
-  const totalEmployees = dashboardMetrics ? dashboardMetrics.employees : (employees.length || 7)
+  const totalEmployees = dashboardMetrics ? dashboardMetrics.employees : (employees.length || 29)
+  const activeEmail = user?.email || 'neeraj.chadha@cispl.in'
 
   const auditEvents = [
-    { time: '14:25:06', user: 'admin@cispl.in', action: 'POST /leaves/approve', tag: 'write', label: 'Leave Approved' },
-    { time: '14:24:55', user: 'admin@cispl.in', action: 'POST /employees', tag: 'write', label: 'Employee Created' },
-    { time: '14:19:15', user: 'admin@cispl.in', action: 'POST /auth/login', tag: 'auth', label: 'JWT Token Issued' },
+    { time: '14:25:06', user: 'hr@cispl.in', action: 'POST /leaves/approve', tag: 'write', label: 'Leave Approved' },
+    { time: '14:24:55', user: 'hr@cispl.in', action: 'POST /employees', tag: 'write', label: 'Employee Created' },
+    { time: '14:19:15', user: activeEmail, action: 'POST /auth/login', tag: 'auth', label: 'JWT Token Issued' },
     { time: '14:17:41', user: 'SYSTEM', action: 'PRISMA_SEED', tag: 'security', label: 'SQLite DB Initialized' },
-    { time: '09:28:00', user: 'sahil@cispl.in', action: 'POST /attendance/check-in', tag: 'auth', label: 'Biometric Clock Punch' },
+    { time: '09:28:00', user: 'sahil.yadav@cispl.in', action: 'POST /attendance/check-in', tag: 'auth', label: 'Biometric Clock Punch' },
   ]
 
   const departments = [
@@ -2621,8 +2615,8 @@ function SettingsPage() {
    10. AUTH & SHARED COMPONENTS
    ========================================================================== */
 function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
-  const [email, setEmail] = useState('admin@cispl.in')
-  const [password, setPassword] = useState('Admin@123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -2674,47 +2668,12 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
           <h3 style={{ margin: '0 0 20px', fontSize: 12, color: '#888496' }}>Use your @cispl.in company credentials to continue.</h3>
           {error && <div className="login-error">{error}</div>}
 
-          {/* Quick 1-Click Role Logins */}
-          <div style={{ margin: '10px 0 14px', background: '#faf9fd', border: '1px solid #e7e4f2', borderRadius: 10, padding: '10px 12px' }}>
-            <span style={{ display: 'block', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.06em', color: '#6d5bd0', marginBottom: 8 }}>
-              QUICK LOGIN ACCOUNTS (@cispl.in):
-            </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
-              <button
-                type="button"
-                className="role-chip-btn"
-                onClick={() => { setEmail('admin@cispl.in'); setPassword('Admin@123') }}
-              >
-                👑 Director (Neeraj Chadha)
-              </button>
-              <button
-                type="button"
-                className="role-chip-btn"
-                onClick={() => { setEmail('hr@cispl.in'); setPassword('Admin@123') }}
-              >
-                🧑‍💼 HR Operations
-              </button>
-              <button
-                type="button"
-                className="role-chip-btn"
-                onClick={() => { setEmail('manager@cispl.in'); setPassword('Admin@123') }}
-              >
-                👨‍💼 GM Sales (Jitesh Salvi)
-              </button>
-              <button
-                type="button"
-                className="role-chip-btn"
-                onClick={() => { setEmail('sahil@cispl.in'); setPassword('Admin@123') }}
-              >
-                💻 Sahil Yadav (Services, Tech Support & Dev)
-              </button>
-            </div>
-          </div>
 
           <label>Work email
             <input
               type="email"
               required
+              placeholder="e.g. sahil.yadav@cispl.in"
               value={email}
               onChange={e => setEmail(e.target.value)}
               autoComplete="email"
@@ -2726,6 +2685,7 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
                 type="password"
                 required
                 minLength={8}
+                placeholder="Enter password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -2739,16 +2699,7 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
           <button className="login-submit" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
-          <div className="divider"><span>or explore demo roles</span></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-            <button className="demo-submit" style={{ padding: '8px 10px', fontSize: 11.5 }} type="button" onClick={() => onLogin(authService.demo('HR_ADMIN'))}>
-              🧑‍💼 HR Admin Demo
-            </button>
-            <button className="demo-submit" style={{ padding: '8px 10px', fontSize: 11.5 }} type="button" onClick={() => onLogin(authService.demo('EMPLOYEE'))}>
-              👤 Employee Demo
-            </button>
-          </div>
-          <small className="demo-note">Connected to live SQLite database. Password for all: Admin@123</small>
+          <small className="auth-system-note">Complete Instrumentation Solutions Pvt Ltd • Enterprise Database Connected</small>
         </form>
       </main>
     </div>

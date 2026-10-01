@@ -28,7 +28,7 @@ export async function api<T>(path: string, options: RequestInit = {}, retry = tr
   try {
     response = await fetch(`${API_URL}${path}`, { ...options, headers })
   } catch {
-    throw new Error('Unable to connect to backend server. Make sure the API is running or click "Explore the demo workspace".')
+    throw new Error('Unable to connect to CISPL backend server. Please verify your network connection and that the API is running.')
   }
   if (response.status === 401 && retry && session?.refreshToken) {
     try {

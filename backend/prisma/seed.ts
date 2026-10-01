@@ -99,21 +99,9 @@ const main = async () => {
   const realTeamMembers = [
     // --- Executive Leadership ---
     {
-      email: 'admin@cispl.in',
-      role: Role.SUPER_ADMIN,
-      code: 'CIS-001',
-      firstName: 'Neeraj',
-      lastName: 'Chadha',
-      phone: '+91 98100 11001',
-      dept: 'Executive Leadership',
-      desig: 'Director Technical & Sales',
-      loc: locHq.id,
-      salary: 225000,
-    },
-    {
       email: 'neeraj.chadha@cispl.in',
       role: Role.SUPER_ADMIN,
-      code: 'CIS-001A',
+      code: 'CIS-001',
       firstName: 'Neeraj',
       lastName: 'Chadha',
       phone: '+91 98100 11001',
@@ -135,21 +123,9 @@ const main = async () => {
       salary: 225000,
     },
     {
-      email: 'manager@cispl.in',
-      role: Role.MANAGER,
-      code: 'CIS-003',
-      firstName: 'Jitesh',
-      lastName: 'Salvi',
-      phone: '+91 98100 11003',
-      dept: 'Sales & Business Development',
-      desig: 'General Manager Sales & Services',
-      loc: locHq.id,
-      salary: 175000,
-    },
-    {
       email: 'jitesh.salvi@cispl.in',
       role: Role.MANAGER,
-      code: 'CIS-003A',
+      code: 'CIS-003',
       firstName: 'Jitesh',
       lastName: 'Salvi',
       phone: '+91 98100 11003',
@@ -343,21 +319,9 @@ const main = async () => {
       salary: 110000,
     },
     {
-      email: 'sahil@cispl.in',
-      role: Role.SUPER_ADMIN,
-      code: 'CIS-019',
-      firstName: 'Sahil',
-      lastName: 'Yadav',
-      phone: '+91 98100 11019',
-      dept: 'Engineering Services & Operations',
-      desig: 'Services, Technical Support & Developer',
-      loc: locHq.id,
-      salary: 125000,
-    },
-    {
       email: 'sahil.yadav@cispl.in',
       role: Role.SUPER_ADMIN,
-      code: 'CIS-019A',
+      code: 'CIS-019',
       firstName: 'Sahil',
       lastName: 'Yadav',
       phone: '+91 98100 11019',
@@ -713,10 +677,10 @@ const main = async () => {
 
   console.log('✅ Seeding completed with REAL team members from CISPL Org Chart!')
   console.log('Seeded Accounts (Password for all: Admin@123):')
-  console.log('- 👑 Director / Super Admin: admin@cispl.in or neeraj.chadha@cispl.in')
+  console.log('- 👑 Director / Super Admin: neeraj.chadha@cispl.in')
   console.log('- 👑 Director Operations:    rajan.chadha@cispl.in')
-  console.log('- 👨‍💼 GM Sales & Services:    manager@cispl.in or jitesh.salvi@cispl.in')
-  console.log('- 👤 Engineer Services:      sahil@cispl.in or sahil.yadav@cispl.in')
+  console.log('- 👨‍💼 GM Sales & Services:    jitesh.salvi@cispl.in')
+  console.log('- 💻 Services, Support & Dev: sahil.yadav@cispl.in')
   console.log('- 🧑‍💼 HR Operations:         hr@cispl.in')
 }
 
