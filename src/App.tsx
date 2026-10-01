@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Bell, BriefcaseBusiness, CalendarDays, ChevronDown, ChevronLeft, ChevronRight,
   CircleDollarSign, Clock3, FileText, Gauge, LayoutGrid, Menu, MoreHorizontal,
   Search, Settings, Sparkles, TrendingUp, UserRoundPlus, Users, X, Upload, Download, ShieldCheck,
 } from 'lucide-react'
+import { authService, type AuthUser } from './services/auth.service'
 
 type Page = 'Dashboard' | 'People' | 'Attendance' | 'Leave' | 'Payroll' | 'Recruitment' | 'Performance' | 'Documents' | 'Notifications' | 'Reports'
 
@@ -30,9 +31,14 @@ const activity = [
 ]
 
 function App() {
+  const [user, setUser] = useState<AuthUser | null>(() => authService.current())
   const [page, setPage] = useState<Page>('Dashboard')
   const [mobileOpen, setMobileOpen] = useState(false)
   const [search, setSearch] = useState('')
+
+  useEffect(() => { const expire = () => setUser(null); window.addEventListener('session-expired', expire); return () => window.removeEventListener('session-expired', expire) }, [])
+  if (!user) return <LoginPage onLogin={setUser}/>
+  const signOut = async () => { await authService.logout(); setUser(null) }
 
   return <div className="app-shell">
     <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
@@ -46,7 +52,7 @@ function App() {
         <button className={page === 'Reports' ? 'active' : ''} onClick={()=>{setPage('Reports');setMobileOpen(false)}}><TrendingUp size={19}/><span>Reports</span></button>
         <button><Settings size={19}/><span>Settings</span></button>
       </nav>
-      <div className="profile"><div className="avatar avatar-dark">SK</div><div><strong>Sahil Kumar</strong><small>HR Administrator</small></div><MoreHorizontal size={18}/></div>
+      <button className="profile" onClick={signOut} title="Sign out"><div className="avatar avatar-dark">{user.employee ? `${user.employee.firstName[0]}${user.employee.lastName[0]}` : 'HR'}</div><div><strong>{user.employee ? `${user.employee.firstName} ${user.employee.lastName}` : user.email}</strong><small>{user.demo ? 'Demo workspace · Sign out' : `${user.role.replaceAll('_',' ')} · Sign out`}</small></div><MoreHorizontal size={18}/></button>
     </aside>
     {mobileOpen && <div className="scrim" onClick={() => setMobileOpen(false)} />}
 
@@ -61,6 +67,13 @@ function App() {
       </div>
     </main>
   </div>
+}
+
+function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
+  const [email, setEmail] = useState('admin@acme.test'), [password, setPassword] = useState('Admin@123')
+  const [loading, setLoading] = useState(false), [error, setError] = useState('')
+  const submit = async (event: React.FormEvent) => { event.preventDefault(); setLoading(true); setError(''); try { onLogin(await authService.login(email, password)) } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to sign in') } finally { setLoading(false) } }
+  return <div className="auth-page"><section className="auth-story"><div className="brand auth-brand"><span className="brand-mark"><Sparkles size={19}/></span><span>peoplely</span></div><div className="story-copy"><span>SMART PEOPLE OPERATIONS</span><h1>Build a workplace where people thrive.</h1><p>One thoughtful workspace for your team, time, growth, and every important HR moment.</p><div className="story-stats"><div><strong>248</strong><small>People connected</small></div><div><strong>94%</strong><small>Team retention</small></div><div><strong>4.8</strong><small>Employee rating</small></div></div></div><p className="story-foot">Trusted by modern people teams</p></section><main className="auth-main"><form className="login-card" onSubmit={submit}><div className="mobile-brand brand"><span className="brand-mark"><Sparkles size={19}/></span><span>peoplely</span></div><p>WELCOME BACK</p><h2>Sign in to your workspace</h2><h3>Use your company credentials to continue.</h3>{error&&<div className="login-error">{error}</div>}<label>Work email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email"/></label><label>Password<div className="password-field"><input type="password" required minLength={8} value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password"/></div></label><div className="login-options"><label><input type="checkbox"/> Remember me</label><button type="button">Forgot password?</button></div><button className="login-submit" disabled={loading}>{loading?'Signing in…':'Sign in'}</button><div className="divider"><span>or</span></div><button className="demo-submit" type="button" onClick={()=>onLogin(authService.demo())}>Explore the demo workspace</button><small className="demo-note">Demo data stays in your browser. No server required.</small></form></main></div>
 }
 
 function Dashboard({ onPeople }: { onPeople: () => void }) {

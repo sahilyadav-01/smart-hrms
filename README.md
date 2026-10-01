@@ -13,6 +13,10 @@ npm run dev
 
 Then open the local URL printed by Vite.
 
+The frontend opens on a protected sign-in screen. Use the seeded administrator account when the API is running, or choose **Explore the demo workspace** to preview the interface without a database. Set `VITE_API_URL` when the API is hosted somewhere other than `/api/v1`.
+
+Run the complete production-style stack with Docker using `docker compose up --build`. The web application is exposed at `http://localhost:8080`. Set a strong `JWT_SECRET` before deploying.
+
 ### Database and API
 
 ```bash
@@ -32,6 +36,7 @@ Demo administrator: `admin@acme.test` / `Admin@123` (development seed only; chan
 Implemented API routes:
 
 - `POST /api/v1/auth/login`
+- `POST /api/v1/auth/refresh` (rotating refresh token)
 - `GET /api/v1/auth/me`
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/employees`
@@ -99,4 +104,13 @@ Implemented API routes:
 
 ## Current milestone
 
-Version 0.10 includes the complete core HR workflow plus tenant-scoped workforce, attendance, payroll and recruitment analytics, dashboard KPIs, responsive visual reports, and export-ready views. The full product blueprint lives in `plan.md`.
+Version 1.1 adds a protected frontend session, real API login/logout, automatic refresh-token rotation, session-expiry handling, and a separate browser-only demo workspace. The full product blueprint lives in `plan.md`.
+
+## Verification
+
+```bash
+npm run build
+cd backend
+npm run build
+npm test
+```
