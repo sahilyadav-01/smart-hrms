@@ -27,7 +27,8 @@ router.get('/', asyncHandler(async (req, res) => {
 }))
 
 router.get('/:id', asyncHandler(async (req, res) => {
-  const employee = await prisma.employee.findFirst({ where: { id: req.params.id, companyId: req.user!.companyId }, include: { department: true, designation: true, manager: true } })
+  const id = z.uuid().parse(req.params.id)
+  const employee = await prisma.employee.findFirst({ where: { id, companyId: req.user!.companyId }, include: { department: true, designation: true, manager: true } })
   if (!employee) throw new HttpError(404, 'Employee not found')
   res.json(employee)
 }))
@@ -39,14 +40,16 @@ router.post('/', allowRoles(...managers), asyncHandler(async (req, res) => {
 }))
 
 router.patch('/:id', allowRoles(...managers), asyncHandler(async (req, res) => {
-  const existing = await prisma.employee.findFirst({ where: { id: req.params.id, companyId: req.user!.companyId } })
+  const id = z.uuid().parse(req.params.id)
+  const existing = await prisma.employee.findFirst({ where: { id, companyId: req.user!.companyId } })
   if (!existing) throw new HttpError(404, 'Employee not found')
   const employee = await prisma.employee.update({ where: { id: existing.id }, data: employeeSchema.partial().parse(req.body) })
   res.json(employee)
 }))
 
 router.delete('/:id', allowRoles(Role.SUPER_ADMIN, Role.HR_ADMIN), asyncHandler(async (req, res) => {
-  const existing = await prisma.employee.findFirst({ where: { id: req.params.id, companyId: req.user!.companyId } })
+  const id = z.uuid().parse(req.params.id)
+  const existing = await prisma.employee.findFirst({ where: { id, companyId: req.user!.companyId } })
   if (!existing) throw new HttpError(404, 'Employee not found')
   await prisma.employee.update({ where: { id: existing.id }, data: { status: EmployeeStatus.TERMINATED } })
   res.status(204).send()
