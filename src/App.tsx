@@ -6,6 +6,7 @@ import {
   ShieldCheck, Lock, Building, Sun, PartyPopper, AlertCircle, Eye,
 } from 'lucide-react'
 import { authService, type AuthUser } from './services/auth.service'
+import { api, sessionStore } from './services/api'
 
 type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'MANAGER' | 'EMPLOYEE'
 type Page = 'Dashboard' | 'People' | 'Attendance' | 'Leave' | 'Payroll' | 'Recruitment' | 'Performance' | 'Documents' | 'Notifications' | 'Reports' | 'Settings'
@@ -24,6 +25,36 @@ type Employee = {
   joiningDate: string
   manager: string
   salary: string
+}
+
+function mapBackendEmployee(be: any): Employee {
+  const name = `${be.firstName || ''} ${be.lastName || ''}`.trim() || 'Employee'
+  const initials = `${be.firstName?.[0] || ''}${be.lastName?.[0] || ''}`.toUpperCase() || 'EM'
+  const tones = ['violet', 'blue', 'green', 'orange', 'pink']
+  const tone = tones[Math.abs(name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % tones.length]
+  const statusMap: Record<string, 'Active' | 'On leave' | 'Remote'> = {
+    ACTIVE: 'Active',
+    CONFIRMED: 'Active',
+    PROBATION: 'Active',
+    ONBOARDING: 'Active',
+    RESIGNED: 'On leave',
+    TERMINATED: 'On leave',
+  }
+  return {
+    id: be.id,
+    code: be.employeeCode || `EMP-${be.id.slice(0, 4)}`,
+    name,
+    role: be.designation?.title || 'Team Member',
+    dept: be.department?.name || 'Engineering',
+    status: statusMap[be.status] || 'Active',
+    initials,
+    tone,
+    email: be.email,
+    phone: be.phone || '+91 98765 00000',
+    joiningDate: be.joiningDate ? new Date(be.joiningDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '15 Jan 2024',
+    manager: be.manager ? `${be.manager.firstName} ${be.manager.lastName}` : 'Leadership Team',
+    salary: '₹1,25,000 / mo',
+  }
 }
 
 type LeaveReq = {
@@ -64,7 +95,16 @@ const navItems: { label: Page; icon: typeof LayoutGrid }[] = [
 
 function App() {
   const [user, setUser] = useState<AuthUser | null>(() => authService.current())
-  const [activeRole, setActiveRole] = useState<RoleType>('HR_ADMIN')
+  const [activeRole, setActiveRole] = useState<RoleType>(() => (authService.current()?.role as RoleType) || 'HR_ADMIN')
+  const [isBackendConnected, setIsBackendConnected] = useState(false)
+  const [dashboardMetrics, setDashboardMetrics] = useState<{
+    employees: number
+    present: number
+    onLeave: number
+    absent: number
+    pendingLeaves: number
+    attendanceRate: number
+  } | null>(null)
   const [page, setPage] = useState<Page>('Dashboard')
   const [mobileOpen, setMobileOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -75,9 +115,9 @@ function App() {
   // Global attendance state for today
   const [checkedIn, setCheckedIn] = useState(true)
   const [checkedOut, setCheckedOut] = useState(false)
-  const [checkInTime, setCheckInTime] = useState('09:42 AM')
+  const [checkInTime, setCheckInTime] = useState('09:28 AM')
   const [checkOutTime, setCheckOutTime] = useState('—')
-  const [workingSeconds, setWorkingSeconds] = useState(13520) // approx 3h 45m
+  const [workingSeconds, setWorkingSeconds] = useState(14520) // approx 4h 2m
 
   // Live seconds ticker
   useEffect(() => {
@@ -94,13 +134,65 @@ function App() {
     { id: 'LR-4', employeeName: 'Sara Ali', leaveType: 'Work from home', dates: '19 Oct', days: '1 day', status: 'Pending', reason: 'Internet maintenance at home.' },
   ])
 
+  // Synchronize real data from SQLite backend API
+  useEffect(() => {
+    if (!user) return
+    const session = sessionStore.get()
+    if (!session?.token) return
+
+    // 1. Fetch real employees
+    api<{ data: any[]; total: number }>('/employees')
+      .then(res => {
+        if (res?.data && res.data.length > 0) {
+          setEmployees(res.data.map(mapBackendEmployee))
+          setIsBackendConnected(true)
+        }
+      })
+      .catch(() => {})
+
+    // 2. Fetch real leave requests
+    const isHrOrManager = ['SUPER_ADMIN', 'HR_ADMIN', 'HR_MANAGER', 'MANAGER'].includes(user.role)
+    const leaveEndpoint = isHrOrManager ? '/leaves' : '/leaves/my'
+    api<{ data: any[]; total: number }>(leaveEndpoint)
+      .then(res => {
+        if (res?.data && res.data.length > 0) {
+          const mapped: LeaveReq[] = res.data.map((l: any) => {
+            const start = new Date(l.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            const end = new Date(l.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            return {
+              id: l.id,
+              employeeName: l.employee ? `${l.employee.firstName} ${l.employee.lastName}` : (user.employee ? `${user.employee.firstName} ${user.employee.lastName}` : 'Employee'),
+              leaveType: l.leaveType?.name || 'Leave',
+              dates: start === end ? start : `${start} – ${end}`,
+              days: `${l.days} ${l.days === 1 ? 'day' : 'days'}`,
+              status: l.status === 'APPROVED' ? 'Approved' : l.status === 'REJECTED' ? 'Rejected' : 'Pending',
+              reason: l.reason,
+            }
+          })
+          setLeaveRequests(mapped)
+          setIsBackendConnected(true)
+        }
+      })
+      .catch(() => {})
+
+    // 3. Fetch real reports dashboard metrics
+    api<any>('/reports/dashboard')
+      .then(stats => {
+        if (stats && typeof stats.employees === 'number') {
+          setDashboardMetrics(stats)
+          setIsBackendConnected(true)
+        }
+      })
+      .catch(() => {})
+  }, [user])
+
   useEffect(() => {
     const expire = () => setUser(null)
     window.addEventListener('session-expired', expire)
     return () => window.removeEventListener('session-expired', expire)
   }, [])
 
-  if (!user) return <LoginPage onLogin={u => { setUser(u); setActiveRole('HR_ADMIN') }} />
+  if (!user) return <LoginPage onLogin={u => { setUser(u); setActiveRole((u.role as RoleType) || 'HR_ADMIN') }} />
 
   const signOut = async () => {
     await authService.logout()
@@ -114,9 +206,15 @@ function App() {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
-  const handlePunchIn = () => {
+  const handlePunchIn = async () => {
     const now = new Date()
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    try {
+      await api('/attendance/check-in', { method: 'POST', body: JSON.stringify({ notes: 'Web clock punch in' }) })
+      setIsBackendConnected(true)
+    } catch {
+      // Offline fallback
+    }
     setCheckedIn(true)
     setCheckedOut(false)
     setCheckInTime(timeStr)
@@ -124,19 +222,56 @@ function App() {
     setWorkingSeconds(0)
   }
 
-  const handlePunchOut = () => {
+  const handlePunchOut = async () => {
     const now = new Date()
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    try {
+      await api('/attendance/check-out', { method: 'POST', body: JSON.stringify({ notes: 'Web clock punch out' }) })
+      setIsBackendConnected(true)
+    } catch {
+      // Offline fallback
+    }
     setCheckedOut(true)
     setCheckOutTime(timeStr)
   }
 
-  const handleApproveLeave = (id: string) => {
+  const handleApproveLeave = async (id: string) => {
+    try {
+      if (!id.startsWith('LR-')) {
+        await api(`/leaves/${id}/approve`, { method: 'POST', body: JSON.stringify({ note: 'Approved via HR Dashboard' }) })
+        setIsBackendConnected(true)
+      }
+    } catch {
+      // Fallback
+    }
     setLeaveRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'Approved' } : r))
   }
 
-  const handleRejectLeave = (id: string) => {
+  const handleRejectLeave = async (id: string) => {
     setLeaveRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'Rejected' } : r))
+  }
+
+  const handleAddEmployee = async (emp: Employee) => {
+    setEmployees(prev => [emp, ...prev])
+    try {
+      const names = emp.name.split(' ')
+      await api('/employees', {
+        method: 'POST',
+        body: JSON.stringify({
+          employeeCode: emp.code,
+          firstName: names[0] || emp.name,
+          lastName: names.slice(1).join(' ') || 'Employee',
+          email: emp.email,
+          phone: emp.phone,
+          joiningDate: new Date(),
+          employmentType: 'FULL_TIME',
+          status: 'ACTIVE',
+        }),
+      })
+      setIsBackendConnected(true)
+    } catch {
+      // Optimistic fallback
+    }
   }
 
   const roleNameMap: Record<RoleType, string> = {
@@ -224,6 +359,12 @@ function App() {
           </div>
 
           <div className="header-actions">
+            {/* Live Backend Connection Indicator */}
+            <div className="connection-badge" title="Live SQLite Backend & API">
+              <span className={`pulse-dot ${isBackendConnected ? 'live' : 'demo'}`} />
+              <span>{isBackendConnected ? 'Real App (Live SQLite)' : 'Demo Mode'}</span>
+            </div>
+
             {/* Dynamic Role Switcher Pill */}
             <div className="role-badge" title="Switch viewpoint">
               <span>View:</span>
@@ -267,6 +408,7 @@ function App() {
                 onRejectLeave={handleRejectLeave}
                 onAddEmployee={() => { setPage('People'); setOpenAddEmployee(true) }}
                 onSelectEmployee={emp => setSelectedEmployee(emp)}
+                dashboardMetrics={dashboardMetrics}
               />
             )
           ) : (
@@ -274,7 +416,7 @@ function App() {
               page={page}
               search={search}
               employees={employees}
-              onAddEmployee={emp => setEmployees(p => [emp, ...p])}
+              onAddEmployee={handleAddEmployee}
               openAddEmployee={openAddEmployee}
               setOpenAddEmployee={setOpenAddEmployee}
               onSelectEmployee={emp => setSelectedEmployee(emp)}
@@ -541,7 +683,7 @@ function EmployeeHomeScreen({
    2. HR DASHBOARD
    ========================================================================== */
 function HrDashboard({
-  employees, leaveRequests, onApproveLeave, onRejectLeave, onAddEmployee, onSelectEmployee,
+  employees, leaveRequests, onApproveLeave, onRejectLeave, onAddEmployee, onSelectEmployee, dashboardMetrics,
 }: {
   employees: Employee[]
   leaveRequests: LeaveReq[]
@@ -549,8 +691,23 @@ function HrDashboard({
   onRejectLeave: (id: string) => void
   onAddEmployee: () => void
   onSelectEmployee: (emp: Employee) => void
+  dashboardMetrics?: {
+    employees: number
+    present: number
+    onLeave: number
+    absent: number
+    pendingLeaves: number
+    attendanceRate: number
+  } | null
 }) {
   const pendingLeaves = leaveRequests.filter(l => l.status === 'Pending')
+
+  const employeeCount = dashboardMetrics ? String(dashboardMetrics.employees) : (employees.length ? String(employees.length) : '248')
+  const presentCount = dashboardMetrics ? String(dashboardMetrics.present) : '231'
+  const onLeaveCount = dashboardMetrics ? String(dashboardMetrics.onLeave) : '12'
+  const absentCount = dashboardMetrics ? String(dashboardMetrics.absent) : '5'
+  const pendingLeavesCount = String(pendingLeaves.length || (dashboardMetrics ? dashboardMetrics.pendingLeaves : 7))
+  const attendanceRate = dashboardMetrics ? `${dashboardMetrics.attendanceRate}% present` : '93.1% present'
 
   const departments = [
     ['Engineering', 84, 34],
@@ -574,11 +731,11 @@ function HrDashboard({
 
       {/* High-level HR KPI metrics - Exact 5 metrics requested */}
       <section className="stats-grid five-cols">
-        <Stat icon={Users} label="Employees" value="248" delta="+12 this month" tone="purple" />
-        <Stat icon={Clock3} label="Present" value="231" delta="93.1% present" tone="green" />
-        <Stat icon={CalendarDays} label="On Leave" value="12" delta="Approved absence" tone="orange" />
-        <Stat icon={AlertCircle} label="Absent" value="5" delta="Unscheduled" tone="pink" />
-        <Stat icon={CalendarDays} label="Pending Leaves" value={String(pendingLeaves.length || 7)} delta="Requires review" tone="blue" />
+        <Stat icon={Users} label="Employees" value={employeeCount} delta="+12 this month" tone="purple" />
+        <Stat icon={Clock3} label="Present" value={presentCount} delta={attendanceRate} tone="green" />
+        <Stat icon={CalendarDays} label="On Leave" value={onLeaveCount} delta="Approved absence" tone="orange" />
+        <Stat icon={AlertCircle} label="Absent" value={absentCount} delta="Unscheduled" tone="pink" />
+        <Stat icon={CalendarDays} label="Pending Leaves" value={pendingLeavesCount} delta="Requires review" tone="blue" />
       </section>
 
       {/* Pending Leave Approvals Queue */}

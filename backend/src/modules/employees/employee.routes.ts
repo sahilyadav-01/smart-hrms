@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Role, EmployeeStatus, EmploymentType } from '@prisma/client'
+import { Role, EmployeeStatus, EmploymentType } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'
@@ -21,7 +21,7 @@ const employeeSchema = z.object({
 router.get('/', asyncHandler(async (req, res) => {
   const query = typeof req.query.search === 'string' ? req.query.search : ''
   const employees = await prisma.employee.findMany({
-    where: { companyId: req.user!.companyId, ...(query && { OR: [{ firstName: { contains: query, mode: 'insensitive' } }, { lastName: { contains: query, mode: 'insensitive' } }, { email: { contains: query, mode: 'insensitive' } }] }) },
+    where: { companyId: req.user!.companyId, ...(query && { OR: [{ firstName: { contains: query } }, { lastName: { contains: query } }, { email: { contains: query } }] }) },
     include: { department: true, designation: true, location: true }, orderBy: { createdAt: 'desc' },
   })
   res.json({ data: employees, total: employees.length })

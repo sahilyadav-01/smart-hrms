@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { PayrollStatus, Prisma, Role } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+import { PayrollStatus, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'
@@ -66,7 +67,7 @@ router.get('/:id/payslip', asyncHandler(async (req, res) => {
   const isAdmin = payrollAdmins.includes(req.user!.role)
   const employee = isAdmin ? null : await employeeForUser(req.user!.id)
   const record = await prisma.payroll.findFirst({ where: { id, employee: { companyId: req.user!.companyId }, ...(!isAdmin && { employeeId: employee!.id }) }, include: { employee: { include: { department: true, designation: true } } } })
-  if (!record || new Set<PayrollStatus>([PayrollStatus.DRAFT, PayrollStatus.CANCELLED]).has(record.status)) throw new HttpError(404, 'Payslip not found')
+  if (!record || new Set<string>([PayrollStatus.DRAFT, PayrollStatus.CANCELLED]).has(record.status)) throw new HttpError(404, 'Payslip not found')
   const number = (value: Prisma.Decimal) => Number(value)
   res.json({ company: 'Acme Studio', period: `${record.year}-${String(record.month).padStart(2, '0')}`, employee: record.employee, earnings: { basicSalary: number(record.basicSalary), hra: number(record.hra), allowances: number(record.allowances), bonus: number(record.bonus), overtime: number(record.overtime) }, deductions: { tax: number(record.tax), other: number(record.deductions) }, grossSalary: number(record.grossSalary), netSalary: number(record.netSalary), status: record.status, paidAt: record.paidAt })
 }))

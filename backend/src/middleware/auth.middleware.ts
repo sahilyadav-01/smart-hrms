@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import type { Role } from '@prisma/client'
+import type { Role } from '../types/enums.js'
 import { env } from '../config/env.js'
 import { HttpError } from '../utils/http-error.js'
 

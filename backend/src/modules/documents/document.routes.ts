@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { Router } from 'express'
-import { DocumentStatus, Role } from '@prisma/client'
+import { DocumentStatus, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'

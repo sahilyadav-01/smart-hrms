@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { LeaveStatus, Role } from '@prisma/client'
+import { LeaveStatus, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'
@@ -66,7 +66,7 @@ router.post('/:id/approve', allowRoles(...managers), asyncHandler(async (req, re
   const note = z.object({ note: z.string().max(500).optional() }).parse(req.body).note
   const request = await prisma.leaveRequest.findFirst({ where: { id, employee: { companyId: req.user!.companyId } } })
   if (!request) throw new HttpError(404, 'Leave request not found')
-  if (!new Set<LeaveStatus>([LeaveStatus.PENDING, LeaveStatus.MANAGER_APPROVED]).has(request.status)) throw new HttpError(409, 'This request has already been reviewed')
+  if (!new Set<string>([LeaveStatus.PENDING, LeaveStatus.MANAGER_APPROVED]).has(request.status)) throw new HttpError(409, 'This request has already been reviewed')
   const isHr = new Set<Role>([Role.SUPER_ADMIN, Role.HR_ADMIN, Role.HR_MANAGER]).has(req.user!.role)
   const nextStatus = isHr ? LeaveStatus.APPROVED : LeaveStatus.MANAGER_APPROVED
   const updated = await prisma.$transaction(async tx => {

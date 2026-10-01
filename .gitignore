@@ -4,4 +4,6 @@ dist
 .env.local
 *.log
 backend/uploads/
+*.db
+*.db-journal
 .DS_Store

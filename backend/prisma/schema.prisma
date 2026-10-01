@@ -3,121 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  SUPER_ADMIN
-  HR_ADMIN
-  HR_MANAGER
-  MANAGER
-  EMPLOYEE
-  RECRUITER
-}
-
-enum EmployeeStatus {
-  ONBOARDING
-  ACTIVE
-  PROBATION
-  CONFIRMED
-  RESIGNED
-  TERMINATED
-}
-
-enum EmploymentType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
-  INTERN
-}
-
-enum AttendanceStatus {
-  PRESENT
-  ABSENT
-  LATE
-  ON_LEAVE
-  WORK_FROM_HOME
-  HALF_DAY
-}
-
-enum LeaveStatus {
-  PENDING
-  MANAGER_APPROVED
-  APPROVED
-  REJECTED
-  CANCELLED
-}
-
-enum PayrollStatus {
-  DRAFT
-  PROCESSED
-  PAID
-  CANCELLED
-}
-
-enum JobStatus {
-  DRAFT
-  OPEN
-  PAUSED
-  CLOSED
-}
-
-enum ApplicationStatus {
-  APPLIED
-  SCREENING
-  SHORTLISTED
-  INTERVIEW
-  SELECTED
-  REJECTED
-  HIRED
-}
-
-enum InterviewStatus {
-  SCHEDULED
-  COMPLETED
-  CANCELLED
-}
-
-enum PerformanceCycleStatus {
-  DRAFT
-  ACTIVE
-  REVIEW
-  COMPLETED
-}
-
-enum GoalStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum ReviewStatus {
-  PENDING_SELF_REVIEW
-  PENDING_MANAGER_REVIEW
-  PENDING_HR_REVIEW
-  FINALIZED
-}
-
-enum DocumentStatus {
-  PENDING
-  VERIFIED
-  REJECTED
-  EXPIRED
-}
-
-enum NotificationType {
-  INFO
-  SUCCESS
-  WARNING
-  ACTION_REQUIRED
-}
-
-enum AnnouncementAudience {
-  ALL
-  MANAGERS
-  EMPLOYEES
 }
 
 model Company {
@@ -151,7 +38,7 @@ model AuditLog {
   userId     String?
   companyId  String?
   company    Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  metadata   Json?
+  metadata   String?
   createdAt  DateTime @default(now())
 
   @@index([companyId, createdAt])
@@ -159,31 +46,31 @@ model AuditLog {
 }
 
 model Notification {
-  id        String           @id @default(uuid())
+  id        String    @id @default(uuid())
   title     String
   message   String
-  type      NotificationType @default(INFO)
+  type      String    @default("INFO")
   actionUrl String?
   readAt    DateTime?
   userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime         @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
 
   @@index([userId, readAt, createdAt])
 }
 
 model Announcement {
-  id          String               @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   body        String
-  audience    AnnouncementAudience @default(ALL)
+  audience    String    @default("ALL")
   publishedAt DateTime?
   expiresAt   DateTime?
   authorId    String
   companyId   String
-  company     Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([companyId, publishedAt, expiresAt])
 }
@@ -208,8 +95,8 @@ model Document {
   storageKey    String           @unique
   mimeType      String
   sizeBytes     Int
-  status        DocumentStatus   @default(PENDING)
-  expiresAt     DateTime?        @db.Date
+  status        String           @default("PENDING")
+  expiresAt     DateTime?
   verifiedAt    DateTime?
   verifiedById  String?
   rejectionNote String?
@@ -227,9 +114,9 @@ model Document {
 model PerformanceCycle {
   id        String                 @id @default(uuid())
   name      String
-  startDate DateTime               @db.Date
-  endDate   DateTime               @db.Date
-  status    PerformanceCycleStatus @default(DRAFT)
+  startDate DateTime
+  endDate   DateTime
+  status    String                 @default("DRAFT")
   companyId String
   company   Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
   goals     PerformanceGoal[]
@@ -249,8 +136,8 @@ model PerformanceGoal {
   target      String?
   weight      Int              @default(0)
   progress    Int              @default(0)
-  status      GoalStatus       @default(NOT_STARTED)
-  dueDate     DateTime?        @db.Date
+  status      String           @default("NOT_STARTED")
+  dueDate     DateTime?
   employeeId  String
   cycleId     String
   employee    Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
@@ -263,7 +150,7 @@ model PerformanceGoal {
 
 model PerformanceReview {
   id              String           @id @default(uuid())
-  status          ReviewStatus     @default(PENDING_SELF_REVIEW)
+  status          String           @default("PENDING_SELF_REVIEW")
   selfRating      Int?
   selfComments    String?
   managerRating   Int?
@@ -287,8 +174,8 @@ model Job {
   id             String         @id @default(uuid())
   title          String
   description    String
-  employmentType EmploymentType
-  status         JobStatus      @default(DRAFT)
+  employmentType String         @default("FULL_TIME")
+  status         String         @default("DRAFT")
   openings       Int            @default(1)
   departmentId   String?
   companyId      String
@@ -320,7 +207,7 @@ model Candidate {
 
 model Application {
   id          String            @id @default(uuid())
-  status      ApplicationStatus @default(APPLIED)
+  status      String            @default("APPLIED")
   rating      Int?
   notes       String?
   jobId       String
@@ -343,7 +230,7 @@ model Interview {
   meetingUrl      String?
   interviewerId   String?
   feedback        String?
-  status          InterviewStatus @default(SCHEDULED)
+  status          String          @default("SCHEDULED")
   applicationId   String
   application     Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   createdAt       DateTime        @default(now())
@@ -356,7 +243,7 @@ model User {
   id            String         @id @default(uuid())
   email         String         @unique
   passwordHash  String
-  role          Role           @default(EMPLOYEE)
+  role          String         @default("EMPLOYEE")
   isActive      Boolean        @default(true)
   companyId     String
   company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -423,8 +310,8 @@ model Employee {
   email              String
   phone              String?
   joiningDate        DateTime
-  status             EmployeeStatus      @default(ACTIVE)
-  employmentType     EmploymentType      @default(FULL_TIME)
+  status             String              @default("ACTIVE")
+  employmentType     String              @default("FULL_TIME")
   companyId          String
   departmentId       String?
   designationId      String?
@@ -457,12 +344,12 @@ model Employee {
 
 model SalaryStructure {
   id            String   @id @default(uuid())
-  basicSalary   Decimal  @db.Decimal(12, 2)
-  hra           Decimal  @default(0) @db.Decimal(12, 2)
-  allowances    Decimal  @default(0) @db.Decimal(12, 2)
+  basicSalary   Decimal
+  hra           Decimal  @default(0)
+  allowances    Decimal  @default(0)
   employeeId    String   @unique
   employee      Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  effectiveFrom DateTime @db.Date
+  effectiveFrom DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -471,16 +358,16 @@ model Payroll {
   id            String        @id @default(uuid())
   year          Int
   month         Int
-  basicSalary   Decimal       @db.Decimal(12, 2)
-  hra           Decimal       @db.Decimal(12, 2)
-  allowances    Decimal       @db.Decimal(12, 2)
-  bonus         Decimal       @default(0) @db.Decimal(12, 2)
-  overtime      Decimal       @default(0) @db.Decimal(12, 2)
-  tax           Decimal       @default(0) @db.Decimal(12, 2)
-  deductions    Decimal       @default(0) @db.Decimal(12, 2)
-  grossSalary   Decimal       @db.Decimal(12, 2)
-  netSalary     Decimal       @db.Decimal(12, 2)
-  status        PayrollStatus @default(DRAFT)
+  basicSalary   Decimal
+  hra           Decimal
+  allowances    Decimal
+  bonus         Decimal       @default(0)
+  overtime      Decimal       @default(0)
+  tax           Decimal       @default(0)
+  deductions    Decimal       @default(0)
+  grossSalary   Decimal
+  netSalary     Decimal
+  status        String        @default("DRAFT")
   paidAt        DateTime?
   employeeId    String
   employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
@@ -494,12 +381,12 @@ model Payroll {
 
 model Attendance {
   id           String           @id @default(uuid())
-  date         DateTime         @db.Date
+  date         DateTime
   checkIn      DateTime?
   checkOut     DateTime?
   breakMinutes Int              @default(0)
   notes        String?
-  status       AttendanceStatus @default(PRESENT)
+  status       String           @default("PRESENT")
   employeeId   String
   employee     Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   createdAt    DateTime         @default(now())
@@ -535,10 +422,10 @@ model LeaveBalance {
 
 model LeaveRequest {
   id           String      @id @default(uuid())
-  startDate    DateTime    @db.Date
-  endDate      DateTime    @db.Date
+  startDate    DateTime
+  endDate      DateTime
   reason       String
-  status       LeaveStatus @default(PENDING)
+  status       String      @default("PENDING")
   days         Float
   reviewNote   String?
   reviewedById String?

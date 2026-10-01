@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ApplicationStatus, AttendanceStatus, EmployeeStatus, LeaveStatus, PayrollStatus, Role } from '@prisma/client'
+import { ApplicationStatus, AttendanceStatus, EmployeeStatus, LeaveStatus, PayrollStatus, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'

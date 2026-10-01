@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ApplicationStatus, EmploymentType, InterviewStatus, JobStatus, Role } from '@prisma/client'
+import { ApplicationStatus, EmploymentType, InterviewStatus, JobStatus, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'
@@ -31,7 +31,7 @@ router.patch('/jobs/:id', asyncHandler(async (req, res) => {
 
 router.get('/candidates', asyncHandler(async (req, res) => {
   const search = typeof req.query.search === 'string' ? req.query.search : ''
-  const candidates = await prisma.candidate.findMany({ where: { companyId: req.user!.companyId, ...(search && { OR: [{ firstName: { contains: search, mode: 'insensitive' } }, { lastName: { contains: search, mode: 'insensitive' } }, { email: { contains: search, mode: 'insensitive' } }] }) }, include: { applications: { include: { job: { select: { id: true, title: true } } } } }, orderBy: { createdAt: 'desc' } })
+  const candidates = await prisma.candidate.findMany({ where: { companyId: req.user!.companyId, ...(search && { OR: [{ firstName: { contains: search } }, { lastName: { contains: search } }, { email: { contains: search } }] }) }, include: { applications: { include: { job: { select: { id: true, title: true } } } } }, orderBy: { createdAt: 'desc' } })
   res.json({ data: candidates, total: candidates.length })
 }))
 

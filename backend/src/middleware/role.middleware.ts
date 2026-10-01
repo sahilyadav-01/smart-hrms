@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import type { Role } from '@prisma/client'
+import type { Role } from '../types/enums.js'
 import { HttpError } from '../utils/http-error.js'
 
 export const allowRoles = (...roles: Role[]) => (req: Request, _res: Response, next: NextFunction) => {

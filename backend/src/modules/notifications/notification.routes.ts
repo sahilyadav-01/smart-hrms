@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { AnnouncementAudience, NotificationType, Role } from '@prisma/client'
+import { AnnouncementAudience, NotificationType, Role } from '../../types/enums.js'
 import { z } from 'zod'
 import { prisma } from '../../config/database.js'
 import { authenticate } from '../../middleware/auth.middleware.js'
