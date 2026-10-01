@@ -34,13 +34,21 @@ export const authService = {
     } catch (err) {
       // If the backend server is offline or unreachable, fall back seamlessly to offline/demo mode
       const roleProfiles: Record<string, { firstName: string; lastName: string; role: string }> = {
-        'admin@acme.test': { firstName: 'Sahil', lastName: 'Admin', role: 'SUPER_ADMIN' },
-        'hr@acme.test': { firstName: 'Priya', lastName: 'Sharma', role: 'HR_ADMIN' },
-        'manager@acme.test': { firstName: 'Vikram', lastName: 'Malhotra', role: 'MANAGER' },
-        'sahil@acme.test': { firstName: 'Sahil', lastName: 'Kumar', role: 'EMPLOYEE' },
-        'ananya@acme.test': { firstName: 'Ananya', lastName: 'Iyer', role: 'EMPLOYEE' },
+        'admin@cispl.in': { firstName: 'Neeraj', lastName: 'Chadha', role: 'SUPER_ADMIN' },
+        'neeraj.chadha@cispl.in': { firstName: 'Neeraj', lastName: 'Chadha', role: 'SUPER_ADMIN' },
+        'rajan.chadha@cispl.in': { firstName: 'Rajan', lastName: 'Chadha', role: 'SUPER_ADMIN' },
+        'hr@cispl.in': { firstName: 'HR', lastName: 'Operations', role: 'HR_ADMIN' },
+        'manager@cispl.in': { firstName: 'Jitesh', lastName: 'Salvi', role: 'MANAGER' },
+        'jitesh.salvi@cispl.in': { firstName: 'Jitesh', lastName: 'Salvi', role: 'MANAGER' },
+        'sakshi.sharma@cispl.in': { firstName: 'Sakshi', lastName: 'Sharma', role: 'MANAGER' },
+        'azeezurrahman@cispl.in': { firstName: 'Azeezurrahman', lastName: '', role: 'MANAGER' },
+        'satish.chandra@cispl.in': { firstName: 'Satish', lastName: 'Chandra', role: 'MANAGER' },
+        'sahil@cispl.in': { firstName: 'Sahil', lastName: 'Yadav', role: 'SUPER_ADMIN' },
+        'sahil.yadav@cispl.in': { firstName: 'Sahil', lastName: 'Yadav', role: 'SUPER_ADMIN' },
+        'kapil.sharma@cispl.in': { firstName: 'Kapil', lastName: 'Sharma', role: 'EMPLOYEE' },
+        'saumya.ranjan@cispl.in': { firstName: 'Saumya', lastName: 'Ranjan', role: 'EMPLOYEE' },
       }
-      const profile = roleProfiles[email.toLowerCase()] || { firstName: email.split('@')[0], lastName: 'User', role: 'EMPLOYEE' }
+      const profile = roleProfiles[email.toLowerCase()] || { firstName: email.split('@')[0], lastName: 'CISPL', role: 'EMPLOYEE' }
       const fallbackUser: AuthUser = {
         id: 'local-' + profile.role.toLowerCase(),
         email,
@@ -55,10 +63,10 @@ export const authService = {
 
   demo(targetRole: string = 'HR_ADMIN'): AuthUser {
     const profiles: Record<string, { email: string; firstName: string; lastName: string }> = {
-      SUPER_ADMIN: { email: 'admin@acme.test', firstName: 'Sahil', lastName: 'Admin' },
-      HR_ADMIN: { email: 'hr@acme.test', firstName: 'Priya', lastName: 'Sharma' },
-      MANAGER: { email: 'manager@acme.test', firstName: 'Vikram', lastName: 'Malhotra' },
-      EMPLOYEE: { email: 'sahil@acme.test', firstName: 'Sahil', lastName: 'Kumar' },
+      SUPER_ADMIN: { email: 'admin@cispl.in', firstName: 'Neeraj', lastName: 'Chadha' },
+      HR_ADMIN: { email: 'hr@cispl.in', firstName: 'HR', lastName: 'Operations' },
+      MANAGER: { email: 'manager@cispl.in', firstName: 'Jitesh', lastName: 'Salvi' },
+      EMPLOYEE: { email: 'sahil@cispl.in', firstName: 'Sahil', lastName: 'Yadav' },
     }
     const p = profiles[targetRole] || profiles.HR_ADMIN
     const user: AuthUser = {

@@ -68,12 +68,42 @@ type LeaveReq = {
 }
 
 const initialEmployees: Employee[] = [
-  { id: '1', code: 'EMP-1001', name: 'Sahil Kumar', role: 'Senior Product Designer', dept: 'Design', status: 'Active', initials: 'SK', tone: 'violet', email: 'sahil.kumar@acme.test', phone: '+91 98765 43210', joiningDate: '12 Jan 2024', manager: 'Arjun Mehta', salary: '₹1,25,000 / mo' },
-  { id: '2', code: 'EMP-1002', name: 'Maya Patel', role: 'Staff UI Designer', dept: 'Design', status: 'Active', initials: 'MP', tone: 'violet', email: 'maya.patel@acme.test', phone: '+91 98765 43211', joiningDate: '18 Mar 2024', manager: 'Sahil Kumar', salary: '₹1,10,000 / mo' },
-  { id: '3', code: 'EMP-1003', name: 'Arjun Mehta', role: 'Engineering Lead', dept: 'Engineering', status: 'Active', initials: 'AM', tone: 'blue', email: 'arjun.mehta@acme.test', phone: '+91 98765 43212', joiningDate: '01 Nov 2023', manager: 'Executive Team', salary: '₹1,80,000 / mo' },
-  { id: '4', code: 'EMP-1004', name: 'Nisha Kapoor', role: 'HR Operations Lead', dept: 'People', status: 'On leave', initials: 'NK', tone: 'orange', email: 'nisha.kapoor@acme.test', phone: '+91 98765 43213', joiningDate: '15 Feb 2024', manager: 'Executive Team', salary: '₹95,000 / mo' },
-  { id: '5', code: 'EMP-1005', name: 'Dev Sharma', role: 'Growth Marketing Manager', dept: 'Marketing', status: 'Active', initials: 'DS', tone: 'green', email: 'dev.sharma@acme.test', phone: '+91 98765 43214', joiningDate: '05 May 2024', manager: 'Executive Team', salary: '₹1,15,000 / mo' },
-  { id: '6', code: 'EMP-1006', name: 'Sara Ali', role: 'Financial Analyst', dept: 'Finance', status: 'Remote', initials: 'SA', tone: 'pink', email: 'sara.ali@acme.test', phone: '+91 98765 43215', joiningDate: '20 Jun 2024', manager: 'Finance Director', salary: '₹88,000 / mo' },
+  // Executive Leadership
+  { id: '1', code: 'CIS-001', name: 'Neeraj Chadha', role: 'Director Technical & Sales', dept: 'Executive Leadership', status: 'Active', initials: 'NC', tone: 'violet', email: 'neeraj.chadha@cispl.in', phone: '+91 98100 11001', joiningDate: '01 Jan 2020', manager: 'Board of Directors', salary: '₹2,25,000 / mo' },
+  { id: '2', code: 'CIS-002', name: 'Rajan Chadha', role: 'Director Operations', dept: 'Executive Leadership', status: 'Active', initials: 'RC', tone: 'violet', email: 'rajan.chadha@cispl.in', phone: '+91 98100 11002', joiningDate: '01 Jan 2020', manager: 'Board of Directors', salary: '₹2,25,000 / mo' },
+  { id: '3', code: 'CIS-003', name: 'Jitesh Salvi', role: 'General Manager Sales & Services', dept: 'Sales & Business Development', status: 'Active', initials: 'JS', tone: 'blue', email: 'jitesh.salvi@cispl.in', phone: '+91 98100 11003', joiningDate: '15 Mar 2021', manager: 'Neeraj Chadha', salary: '₹1,75,000 / mo' },
+  { id: '4', code: 'CIS-004', name: 'Sneha Kuwarbi', role: 'EA & Coordinator - Sales', dept: 'Executive Leadership', status: 'Active', initials: 'SK', tone: 'pink', email: 'sneha.kuwarbi@cispl.in', phone: '+91 98100 11004', joiningDate: '10 Feb 2022', manager: 'Neeraj Chadha', salary: '₹75,000 / mo' },
+
+  // Sales, OEM & Technical Divisions
+  { id: '5', code: 'CIS-005', name: 'Sakshi Sharma', role: "AGM & Coordinator, OEM'S", dept: 'Tendering & OEM Coordination', status: 'Active', initials: 'SS', tone: 'orange', email: 'sakshi.sharma@cispl.in', phone: '+91 98100 11005', joiningDate: '01 Jun 2021', manager: 'Jitesh Salvi', salary: '₹1,35,000 / mo' },
+  { id: '6', code: 'CIS-006', name: 'Azeezurrahman', role: 'Manager (Tech) - Geophysics & Geotechnical', dept: 'Geophysics & Geotechnical', status: 'Active', initials: 'AR', tone: 'green', email: 'azeezurrahman@cispl.in', phone: '+91 98100 11006', joiningDate: '12 Sep 2021', manager: 'Jitesh Salvi', salary: '₹1,40,000 / mo' },
+  { id: '7', code: 'CIS-007', name: 'Harsh Saini', role: 'Sales Engineer', dept: 'Geophysics & Geotechnical', status: 'On leave', initials: 'HS', tone: 'blue', email: 'harsh.saini@cispl.in', phone: '+91 98100 11007', joiningDate: '18 Apr 2023', manager: 'Azeezurrahman', salary: '₹70,000 / mo' },
+  { id: '8', code: 'CIS-008', name: 'Tousif Ansari', role: 'Sales Engineer', dept: 'Geophysics & Geotechnical', status: 'Active', initials: 'TA', tone: 'blue', email: 'tousif.ansari@cispl.in', phone: '+91 98100 11008', joiningDate: '01 Jul 2023', manager: 'Azeezurrahman', salary: '₹70,000 / mo' },
+  { id: '9', code: 'CIS-009', name: 'Dr. Abhinav', role: 'Manager (Tech) - Pavement Engineering', dept: 'Pavement Engineering & Marketing', status: 'Active', initials: 'AB', tone: 'violet', email: 'dr.abhinav@cispl.in', phone: '+91 98100 11009', joiningDate: '15 Aug 2022', manager: 'Jitesh Salvi', salary: '₹1,45,000 / mo' },
+  { id: '10', code: 'CIS-010', name: 'Ajith C.', role: 'Marketing Coordinator', dept: 'Pavement Engineering & Marketing', status: 'Active', initials: 'AC', tone: 'pink', email: 'ajith.c@cispl.in', phone: '+91 98100 11010', joiningDate: '10 Jan 2023', manager: 'Dr. Abhinav', salary: '₹68,000 / mo' },
+  { id: '11', code: 'CIS-011', name: 'Dr. Raj Kumar', role: 'Manager (Tech) - Materials Testing', dept: 'Materials Testing', status: 'Active', initials: 'RK', tone: 'orange', email: 'dr.rajkumar@cispl.in', phone: '+91 98100 11011', joiningDate: '01 Nov 2022', manager: 'Jitesh Salvi', salary: '₹1,45,000 / mo' },
+  { id: '12', code: 'CIS-012', name: 'Deepak Sharma', role: 'Assistant Sales Manager', dept: 'Materials Testing', status: 'Active', initials: 'DS', tone: 'green', email: 'deepak.sharma@cispl.in', phone: '+91 98100 11012', joiningDate: '20 Mar 2023', manager: 'Dr. Raj Kumar', salary: '₹90,000 / mo' },
+  { id: '13', code: 'CIS-013', name: 'Chinmay Neogi', role: 'Manager (Sales) - Geophysics & Geotechnical (Kolkata)', dept: 'Geophysics & Geotechnical', status: 'Remote', initials: 'CN', tone: 'blue', email: 'chinmay.neogi@cispl.in', phone: '+91 98100 11013', joiningDate: '01 Feb 2022', manager: 'Jitesh Salvi', salary: '₹1,30,000 / mo' },
+  { id: '14', code: 'CIS-014', name: 'Dr. Chandrakant Yadav', role: 'Manager (Tech) - Geology & Rock Mechanics', dept: 'Geology & Rock Mechanics', status: 'Active', initials: 'CY', tone: 'violet', email: 'dr.chandrakant@cispl.in', phone: '+91 98100 11014', joiningDate: '05 May 2022', manager: 'Jitesh Salvi', salary: '₹1,45,000 / mo' },
+  { id: '15', code: 'CIS-015', name: 'Kanta Sharma', role: 'Executive - Tendering Team', dept: 'Tendering & OEM Coordination', status: 'Active', initials: 'KS', tone: 'orange', email: 'kanta.sharma@cispl.in', phone: '+91 98100 11015', joiningDate: '15 Oct 2022', manager: 'Jitesh Salvi', salary: '₹72,000 / mo' },
+  { id: '16', code: 'CIS-016', name: 'Yamini Sharma', role: 'Coordinator Services & Operations', dept: 'Tendering & OEM Coordination', status: 'Active', initials: 'YS', tone: 'pink', email: 'yamini.sharma@cispl.in', phone: '+91 98100 11016', joiningDate: '01 Dec 2021', manager: 'Rajan Chadha', salary: '₹78,000 / mo' },
+
+  // Engineering Services & Operations
+  { id: '17', code: 'CIS-017', name: 'Kapil Sharma', role: 'Senior Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'KS', tone: 'green', email: 'kapil.sharma@cispl.in', phone: '+91 98100 11017', joiningDate: '10 Jan 2022', manager: 'Jitesh Salvi', salary: '₹1,10,000 / mo' },
+  { id: '18', code: 'CIS-018', name: 'Saumya Ranjan', role: 'Senior Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'SR', tone: 'green', email: 'saumya.ranjan@cispl.in', phone: '+91 98100 11018', joiningDate: '15 Feb 2022', manager: 'Jitesh Salvi', salary: '₹1,10,000 / mo' },
+  { id: '19', code: 'CIS-019', name: 'Sahil Yadav', role: 'Services, Technical Support & Developer', dept: 'Engineering Services & Operations', status: 'Active', initials: 'SY', tone: 'violet', email: 'sahil.yadav@cispl.in', phone: '+91 98100 11019', joiningDate: '15 Jun 2023', manager: 'Kapil Sharma', salary: '₹1,25,000 / mo' },
+  { id: '20', code: 'CIS-020', name: 'Vishal Bhardwaj', role: 'Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'VB', tone: 'blue', email: 'vishal.bhardwaj@cispl.in', phone: '+91 98100 11020', joiningDate: '01 Aug 2023', manager: 'Kapil Sharma', salary: '₹80,000 / mo' },
+  { id: '21', code: 'CIS-021', name: 'Bhunesh Kumar', role: 'Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'BK', tone: 'blue', email: 'bhunesh.kumar@cispl.in', phone: '+91 98100 11021', joiningDate: '15 Sep 2023', manager: 'Saumya Ranjan', salary: '₹80,000 / mo' },
+  { id: '22', code: 'CIS-022', name: 'Abinash', role: 'Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'AB', tone: 'blue', email: 'abinash@cispl.in', phone: '+91 98100 11022', joiningDate: '01 Nov 2023', manager: 'Saumya Ranjan', salary: '₹80,000 / mo' },
+  { id: '23', code: 'CIS-023', name: 'Asim Khan', role: 'Engineer Services', dept: 'Engineering Services & Operations', status: 'Active', initials: 'AK', tone: 'blue', email: 'asim.khan@cispl.in', phone: '+91 98100 11023', joiningDate: '15 Dec 2023', manager: 'Kapil Sharma', salary: '₹80,000 / mo' },
+
+  // Finance, Accounts, Operations Support & HR
+  { id: '24', code: 'CIS-024', name: 'Satish Chandra', role: 'Manager Finance & Accounts', dept: 'Finance & Accounts', status: 'Active', initials: 'SC', tone: 'orange', email: 'satish.chandra@cispl.in', phone: '+91 98100 11024', joiningDate: '01 May 2021', manager: 'Rajan Chadha', salary: '₹1,35,000 / mo' },
+  { id: '25', code: 'CIS-025', name: 'Rahul Singh', role: 'Assistant Manager Finance & Accounts', dept: 'Finance & Accounts', status: 'Active', initials: 'RS', tone: 'orange', email: 'rahul.singh@cispl.in', phone: '+91 98100 11025', joiningDate: '15 Jul 2022', manager: 'Satish Chandra', salary: '₹85,000 / mo' },
+  { id: '26', code: 'CIS-026', name: 'Ferdos', role: 'Operations Support Officer', dept: 'Operations Support', status: 'Active', initials: 'FD', tone: 'pink', email: 'ferdos@cispl.in', phone: '+91 98100 11026', joiningDate: '01 Mar 2023', manager: 'Yamini Sharma', salary: '₹55,000 / mo' },
+  { id: '27', code: 'CIS-027', name: 'Ratikanta Panda', role: 'Operations Support Officer', dept: 'Operations Support', status: 'Active', initials: 'RP', tone: 'pink', email: 'ratikanta.panda@cispl.in', phone: '+91 98100 11027', joiningDate: '15 Mar 2023', manager: 'Yamini Sharma', salary: '₹55,000 / mo' },
+  { id: '28', code: 'CIS-028', name: 'Bibhu Prasad', role: 'Operations Support Officer', dept: 'Operations Support', status: 'Active', initials: 'BP', tone: 'pink', email: 'bibhu.prasad@cispl.in', phone: '+91 98100 11028', joiningDate: '01 Apr 2023', manager: 'Yamini Sharma', salary: '₹55,000 / mo' },
+  { id: '29', code: 'CIS-029', name: 'HR Operations', role: 'Manager - HR', dept: 'Human Resources', status: 'Active', initials: 'HR', tone: 'violet', email: 'hr@cispl.in', phone: '+91 98100 11029', joiningDate: '01 Jan 2024', manager: 'Rajan Chadha', salary: '₹1,25,000 / mo' },
 ]
 
 const upcomingHolidays = [
@@ -128,10 +158,10 @@ function App() {
 
   // Leave requests state with approvals
   const [leaveRequests, setLeaveRequests] = useState<LeaveReq[]>([
-    { id: 'LR-1', employeeName: 'Nisha Kapoor', leaveType: 'Casual Leave', dates: '12 Oct – 13 Oct', days: '2 days', status: 'Pending', reason: 'Family engagement out of town.' },
-    { id: 'LR-2', employeeName: 'Maya Patel', leaveType: 'Sick Leave', dates: '14 Sep', days: '1 day', status: 'Approved', reason: 'Medical appointment.' },
-    { id: 'LR-3', employeeName: 'Dev Sharma', leaveType: 'Earned Leave', dates: '3 Aug – 7 Aug', days: '5 days', status: 'Approved', reason: 'Annual vacation.' },
-    { id: 'LR-4', employeeName: 'Sara Ali', leaveType: 'Work from home', dates: '19 Oct', days: '1 day', status: 'Pending', reason: 'Internet maintenance at home.' },
+    { id: 'LR-1', employeeName: 'Harsh Saini', leaveType: 'Site / On-Duty Leave', dates: '12 Oct – 13 Oct', days: '2 days', status: 'Pending', reason: 'On-site Geotechnical investigation at NHAI highway corridor.' },
+    { id: 'LR-2', employeeName: 'Vishal Bhardwaj', leaveType: 'Casual Leave', dates: '18 Oct – 19 Oct', days: '2 days', status: 'Pending', reason: 'Family function & personal travel.' },
+    { id: 'LR-3', employeeName: 'Tousif Ansari', leaveType: 'Sick Leave', dates: '14 Sep', days: '1 day', status: 'Approved', reason: 'Medical appointment.' },
+    { id: 'LR-4', employeeName: 'Deepak Sharma', leaveType: 'Earned Leave', dates: '3 Aug – 7 Aug', days: '5 days', status: 'Approved', reason: 'Annual vacation.' },
   ])
 
   // Synchronize real data from SQLite backend API
@@ -301,15 +331,18 @@ function App() {
     <div className="app-shell">
       {/* Sidebar */}
       <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
-        <div className="brand">
-          <span className="brand-mark"><Sparkles size={19} /></span>
-          <span>peoplely</span>
+        <div className="brand" style={{ padding: '0 4px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/logo.png" alt="Complete Instrumentation Solutions Logo" style={{ width: 38, height: 38, objectFit: 'contain', background: '#fff', borderRadius: 8, border: '1px solid #e8e6f0', padding: 2 }} />
+          <div>
+            <span style={{ display: 'block', font: '800 16px Manrope', color: '#171623', letterSpacing: '-0.3px', lineHeight: 1.15 }}>CISPL</span>
+            <small style={{ fontSize: 9.5, color: '#7e7b8b', fontWeight: 700, letterSpacing: '0.6px' }}>SMART HRMS</small>
+          </div>
         </div>
         <button className="close-nav" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X /></button>
         <div className="workspace">
-          <div className="company-avatar">A</div>
+          <img src="/logo.png" alt="CIS Logo" className="company-avatar" style={{ width: 36, height: 36, objectFit: 'contain', background: '#fff', border: '1px solid #e8e6f0', padding: 2, borderRadius: 8 }} />
           <div>
-            <strong>Acme Studio</strong>
+            <strong>Complete Instrumentation Solutions Pvt Ltd</strong>
             <small>{roleNameMap[activeRole]}</small>
           </div>
           <ChevronDown size={16} />
@@ -431,6 +464,7 @@ function App() {
                 onRejectLeave={handleRejectLeave}
                 onSelectEmployee={emp => setSelectedEmployee(emp)}
                 onNavigate={p => setPage(p)}
+                user={user}
               />
             ) : (
               <EmployeeHomeScreen
@@ -466,6 +500,7 @@ function App() {
               onPunchIn={handlePunchIn}
               onPunchOut={handlePunchOut}
               isEmployeeView={activeRole === 'EMPLOYEE'}
+              user={user}
             />
           )}
         </div>
@@ -517,7 +552,7 @@ function App() {
               </div>
               <div className="profile-detail-box">
                 <span>LOCATION & WORK TYPE</span>
-                <strong>Bangalore, IN · Full-time</strong>
+                <strong>Gurugram / Kolkata, IN · Full-time</strong>
               </div>
             </div>
 
@@ -738,19 +773,22 @@ function SuperAdminDashboard({
   const totalEmployees = dashboardMetrics ? dashboardMetrics.employees : (employees.length || 7)
 
   const auditEvents = [
-    { time: '14:25:06', user: 'admin@acme.test', action: 'POST /leaves/approve', tag: 'write', label: 'Leave Approved' },
-    { time: '14:24:55', user: 'admin@acme.test', action: 'POST /employees', tag: 'write', label: 'Employee Created' },
-    { time: '14:19:15', user: 'admin@acme.test', action: 'POST /auth/login', tag: 'auth', label: 'JWT Token Issued' },
+    { time: '14:25:06', user: 'admin@cispl.in', action: 'POST /leaves/approve', tag: 'write', label: 'Leave Approved' },
+    { time: '14:24:55', user: 'admin@cispl.in', action: 'POST /employees', tag: 'write', label: 'Employee Created' },
+    { time: '14:19:15', user: 'admin@cispl.in', action: 'POST /auth/login', tag: 'auth', label: 'JWT Token Issued' },
     { time: '14:17:41', user: 'SYSTEM', action: 'PRISMA_SEED', tag: 'security', label: 'SQLite DB Initialized' },
-    { time: '09:28:00', user: 'sahil@acme.test', action: 'POST /attendance/check-in', tag: 'auth', label: 'Biometric Clock Punch' },
+    { time: '09:28:00', user: 'sahil@cispl.in', action: 'POST /attendance/check-in', tag: 'auth', label: 'Biometric Clock Punch' },
   ]
 
   const departments = [
-    { name: 'Engineering', count: 84, lead: 'Vikram Malhotra', budget: '₹12.4M', status: 'Healthy' },
-    { name: 'People & HR', count: 20, lead: 'Priya Sharma', budget: '₹3.2M', status: 'Healthy' },
-    { name: 'Design', count: 31, lead: 'Ananya Iyer', budget: '₹4.8M', status: 'Healthy' },
-    { name: 'Sales & Growth', count: 58, lead: 'Dev Sharma', budget: '₹8.6M', status: 'Healthy' },
-    { name: 'Finance & Ops', count: 55, lead: 'Sara Ali', budget: '₹6.1M', status: 'Healthy' },
+    { name: 'Engineering Services & Operations', count: 7, lead: 'Kapil Sharma / Saumya Ranjan', budget: '₹14.2M', status: 'Healthy' },
+    { name: 'Geophysics & Geotechnical', count: 4, lead: 'Azeezurrahman', budget: '₹12.8M', status: 'Healthy' },
+    { name: 'Pavement Engineering & Marketing', count: 2, lead: 'Dr. Abhinav', budget: '₹6.4M', status: 'Healthy' },
+    { name: 'Materials Testing', count: 2, lead: 'Dr. Raj Kumar', budget: '₹5.9M', status: 'Healthy' },
+    { name: 'Geology & Rock Mechanics', count: 1, lead: 'Dr. Chandrakant Yadav', budget: '₹4.8M', status: 'Healthy' },
+    { name: 'Tendering & OEM Coordination', count: 4, lead: 'Sakshi Sharma', budget: '₹8.6M', status: 'Healthy' },
+    { name: 'Finance & Accounts', count: 2, lead: 'Satish Chandra', budget: '₹4.2M', status: 'Healthy' },
+    { name: 'Operations Support', count: 3, lead: 'Yamini Sharma', budget: '₹3.1M', status: 'Healthy' },
   ]
 
   return (
@@ -825,7 +863,7 @@ function SuperAdminDashboard({
    2B. MANAGER DASHBOARD
    ========================================================================== */
 function ManagerDashboard({
-  employees, leaveRequests, onApproveLeave, onRejectLeave, onSelectEmployee, onNavigate,
+  employees, leaveRequests, onApproveLeave, onRejectLeave, onSelectEmployee, onNavigate, user,
 }: {
   employees: Employee[]
   leaveRequests: LeaveReq[]
@@ -833,18 +871,23 @@ function ManagerDashboard({
   onRejectLeave: (id: string) => void
   onSelectEmployee: (emp: Employee) => void
   onNavigate: (p: Page) => void
+  user?: AuthUser | null
 }) {
   const pendingLeaves = leaveRequests.filter(l => l.status === 'Pending')
-  // Team members reporting to this department / lead
-  const teamMembers = employees.filter(e => e.dept === 'Engineering' || e.dept === 'Design')
+  // Team members reporting to Services, Technical & Sales divisions
+  const teamMembers = employees.filter(e =>
+    e.dept.includes('Services') || e.dept.includes('Geophysics') || e.dept.includes('Materials') ||
+    e.dept.includes('Pavement') || e.dept.includes('Tendering') || e.dept.includes('Sales')
+  )
+  const managerName = user?.employee ? `${user.employee.firstName} ${user.employee.lastName || ''}`.trim() : 'Jitesh Salvi'
 
   return (
     <>
       <section className="welcome">
         <div>
-          <p>ENGINEERING & DESIGN TEAM HUB</p>
-          <h1>Manager Overview: Vikram Malhotra</h1>
-          <h2>Track your team's shift presence, review time-off requests, and guide sprint performance.</h2>
+          <p>ENGINEERING SERVICES & SALES HUB</p>
+          <h1>Manager Overview: {managerName}</h1>
+          <h2>Track your team's shift presence, review field logs & time-off requests, and guide project performance.</h2>
         </div>
         <button className="primary" onClick={() => onNavigate('People')}><Users size={18} /> View team roster</button>
       </section>
@@ -971,12 +1014,14 @@ function HrDashboard({
   const attendanceRate = dashboardMetrics ? `${dashboardMetrics.attendanceRate}% present` : '93.1% present'
 
   const departments = [
-    ['Engineering', 84, 34],
-    ['Sales', 58, 23],
-    ['Operations', 43, 17],
-    ['Design', 31, 13],
-    ['People', 20, 8],
-    ['Finance', 12, 5],
+    ['Engineering Services & Operations', 7, 24],
+    ['Tendering & OEM Coordination', 4, 14],
+    ['Geophysics & Geotechnical', 4, 14],
+    ['Executive Leadership', 4, 14],
+    ['Operations Support', 3, 10],
+    ['Finance & Accounts', 2, 7],
+    ['Materials Testing', 2, 7],
+    ['Pavement Engineering & Marketing', 2, 7],
   ]
 
   return (
@@ -1133,7 +1178,7 @@ function HrDashboard({
 function ModulePage({
   page, search, employees, onAddEmployee, openAddEmployee, setOpenAddEmployee, onSelectEmployee,
   leaveRequests, onApproveLeave, onRejectLeave, onApplyLeave,
-  checkedIn, checkedOut, checkInTime, checkOutTime, onPunchIn, onPunchOut, isEmployeeView,
+  checkedIn, checkedOut, checkInTime, checkOutTime, onPunchIn, onPunchOut, isEmployeeView, user,
 }: {
   page: Page
   search: string
@@ -1153,6 +1198,7 @@ function ModulePage({
   onPunchIn: () => void
   onPunchOut: () => void
   isEmployeeView: boolean
+  user?: AuthUser | null
 }) {
   if (page === 'People') {
     return (
@@ -1186,10 +1232,11 @@ function ModulePage({
         onRejectLeave={onRejectLeave}
         onApplyLeave={onApplyLeave}
         isEmployeeView={isEmployeeView}
+        user={user}
       />
     )
   }
-  if (page === 'Payroll') return <PayrollPage />
+  if (page === 'Payroll') return <PayrollPage user={user} />
   if (page === 'Recruitment') return <RecruitmentPage />
   if (page === 'Performance') return <PerformancePage />
   if (page === 'Documents') return <DocumentsPage search={search} />
@@ -1255,7 +1302,7 @@ function PeoplePage({
       status,
       initials,
       tone,
-      email: email.trim() || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@acme.test`,
+      email: email.trim() || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@cispl.in`,
       phone: phone.trim() || '+91 98765 00000',
       joiningDate: 'Today',
       manager: 'Sahil Kumar',
@@ -1305,11 +1352,17 @@ function PeoplePage({
         <div className="pipeline-actions">
           <select value={deptFilter} onChange={e => setDeptFilter(e.target.value)} style={{ padding: '6px 10px', borderRadius: 7, border: '1px solid var(--line)', fontSize: 11 }}>
             <option value="ALL">All Departments</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Design">Design</option>
-            <option value="People">People</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Finance">Finance</option>
+            <option value="Executive Leadership">Executive Leadership</option>
+            <option value="Sales & Business Development">Sales & Business Development</option>
+            <option value="Engineering Services & Operations">Engineering Services & Operations</option>
+            <option value="Geophysics & Geotechnical">Geophysics & Geotechnical</option>
+            <option value="Pavement Engineering & Marketing">Pavement Engineering & Marketing</option>
+            <option value="Materials Testing">Materials Testing</option>
+            <option value="Geology & Rock Mechanics">Geology & Rock Mechanics</option>
+            <option value="Tendering & OEM Coordination">Tendering & OEM Coordination</option>
+            <option value="Finance & Accounts">Finance & Accounts</option>
+            <option value="Operations Support">Operations Support</option>
+            <option value="Human Resources">Human Resources</option>
           </select>
           <button onClick={handleExport}><Download size={14} /> Export CSV</button>
         </div>
@@ -1373,7 +1426,7 @@ function PeoplePage({
             </div>
             <div className="form-row">
               <label>Work email
-                <input type="email" placeholder="priyal.verma@acme.test" value={email} onChange={e => setEmail(e.target.value)} />
+                <input type="email" placeholder="priyal.verma@cispl.in" value={email} onChange={e => setEmail(e.target.value)} />
               </label>
               <label>Phone number
                 <input placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} />
@@ -1382,11 +1435,15 @@ function PeoplePage({
             <div className="form-row">
               <label>Department
                 <select value={dept} onChange={e => setDept(e.target.value)}>
-                  <option>Engineering</option>
-                  <option>Design</option>
-                  <option>People</option>
-                  <option>Marketing</option>
-                  <option>Finance</option>
+                  <option>Engineering Services & Operations</option>
+                  <option>Geophysics & Geotechnical</option>
+                  <option>Pavement Engineering & Marketing</option>
+                  <option>Materials Testing</option>
+                  <option>Geology & Rock Mechanics</option>
+                  <option>Tendering & OEM Coordination</option>
+                  <option>Finance & Accounts</option>
+                  <option>Operations Support</option>
+                  <option>Human Resources</option>
                 </select>
               </label>
               <label>Status
@@ -1518,13 +1575,14 @@ function AttendancePage({
    6. LEAVE MODULE
    ========================================================================== */
 function LeavePage({
-  leaveRequests, onApproveLeave, onRejectLeave, onApplyLeave, isEmployeeView,
+  leaveRequests, onApproveLeave, onRejectLeave, onApplyLeave, isEmployeeView, user,
 }: {
   leaveRequests: LeaveReq[]
   onApproveLeave: (id: string) => void
   onRejectLeave: (id: string) => void
   onApplyLeave: (req: LeaveReq) => void
   isEmployeeView: boolean
+  user?: AuthUser | null
 }) {
   const [open, setOpen] = useState(false)
   const [leaveType, setLeaveType] = useState('Casual Leave')
@@ -1537,14 +1595,15 @@ function LeavePage({
     ['Casual Leave', '8', '12', 'purple'],
     ['Sick Leave', '5', '10', 'green'],
     ['Earned Leave', '14', '18', 'blue'],
-    ['Work from Home', '20', '24', 'orange'],
+    ['Site / On-Duty', '12', '15', 'orange'],
   ]
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
+    const empName = user?.employee ? `${user.employee.firstName} ${user.employee.lastName || ''}`.trim() : 'Sahil Yadav'
     onApplyLeave({
       id: `LR-${leaveRequests.length + 1}`,
-      employeeName: 'Sahil Kumar',
+      employeeName: empName,
       leaveType,
       dates: `${startDate} – ${endDate}`,
       days: '2 days',
@@ -1673,10 +1732,13 @@ function LeavePage({
 /* ==========================================================================
    7. PAYROLL MODULE
    ========================================================================== */
-function PayrollPage() {
+function PayrollPage({ user }: { user?: AuthUser | null }) {
   const [processing, setProcessing] = useState(false)
   const [processed, setProcessed] = useState(false)
   const [selectedPayslip, setSelectedPayslip] = useState<string | null>(null)
+
+  const employeeName = user?.employee ? `${user.employee.firstName} ${user.employee.lastName || ''}`.trim() : 'Sahil Yadav'
+  const initials = user?.employee ? `${user.employee.firstName[0]}${(user.employee.lastName || '')[0] || ''}`.toUpperCase() : 'SY'
 
   const payroll = [
     ['September 2026', '₹1,25,000', '₹18,500', '₹1,06,500', 'Paid'],
@@ -1768,17 +1830,20 @@ function PayrollPage() {
         <div className="modal-backdrop" onMouseDown={() => setSelectedPayslip(null)}>
           <div className="profile-modal" onMouseDown={e => e.stopPropagation()}>
             <div className="modal-head">
-              <div>
-                <p>SALARY STATEMENT</p>
-                <h2>Payslip — {selectedPayslip}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <img src="/logo.png" alt="CISPL" style={{ width: 38, height: 38, objectFit: 'contain', background: '#fff', border: '1px solid #e8e6f0', borderRadius: 6, padding: 2 }} />
+                <div>
+                  <p>SALARY STATEMENT</p>
+                  <h2>Payslip — {selectedPayslip}</h2>
+                </div>
               </div>
               <button type="button" onClick={() => setSelectedPayslip(null)} aria-label="Close payslip"><X size={19} /></button>
             </div>
             <div className="profile-hero">
-              <div className="avatar violet">SK</div>
+              <div className="avatar violet">{initials}</div>
               <div>
-                <h2>Sahil Kumar</h2>
-                <p>EMP-1001 · Senior Product Designer</p>
+                <h2>{employeeName}</h2>
+                <p>CIS-019 · Services, Technical Support & Developer — Complete Instrumentation Solutions Pvt Ltd</p>
               </div>
               <span className="status approved" style={{ marginLeft: 'auto' }}><i />Paid</span>
             </div>
@@ -1841,9 +1906,9 @@ function PerformancePage() {
   const [reviewOpen, setReviewOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const goals = [
-    ['Deliver responsive PWA design system', 'Product Excellence', '85', '15 Dec 2026'],
-    ['Improve engineering onboarding velocity', 'Team Scaling', '92', '30 Nov 2026'],
-    ['Mentor junior designers across squads', 'People Development', '60', '20 Dec 2026'],
+    ['Complete IOCL & NTPC SCADA instrumentation commissioning', 'Project Delivery', '92', '15 Dec 2026'],
+    ['NABL Calibration audit compliance & ISO/IEC 17025 certification', 'Quality & Standards', '88', '30 Nov 2026'],
+    ['Field testing protocols for highway pavement geophysics survey', 'Operations & Safety', '75', '20 Dec 2026'],
   ]
 
   return (
@@ -1909,16 +1974,16 @@ function PerformancePage() {
 
         <div className="card feedback-card">
           <CardHead title="360° Peer Feedback" sub="Continuous recognition" action="View all" />
-          <div className="feedback-quote">“Sahil brought exceptional clarity and speed to our team, creating an intuitive workflow that all departments love using.”</div>
+          <div className="feedback-quote">“Sahil brought exceptional clarity and technical speed to our engineering services team, executing field instrumentation and commissioning with outstanding precision.”</div>
           <div className="feedback-author">
-            <div className="avatar blue">AM</div>
-            <div><strong>Arjun Mehta</strong><small>Engineering Lead · 2 weeks ago</small></div>
+            <div className="avatar green">KS</div>
+            <div><strong>Kapil Sharma</strong><small>Senior Engineer Services · 2 weeks ago</small></div>
           </div>
           <div className="skills">
             <p>Evaluated Competencies</p>
-            <span>Collaboration & Empathy <b>4.9</b></span>
-            <span>Delivery Speed & Quality <b>4.8</b></span>
-            <span>Leadership & Mentorship <b>4.7</b></span>
+            <span>Instrumentation & Commissioning <b>4.9</b></span>
+            <span>Safety & Field Delivery <b>4.8</b></span>
+            <span>Cross-team Problem Solving <b>4.8</b></span>
           </div>
         </div>
       </section>
@@ -1965,15 +2030,15 @@ function RecruitmentPage() {
   const [candidateModal, setCandidateModal] = useState(false)
   const [targetStage, setTargetStage] = useState('Applied')
   const [candidateName, setCandidateName] = useState('')
-  const [candidateRole, setCandidateRole] = useState('Senior Backend Engineer')
+  const [candidateRole, setCandidateRole] = useState('Senior Instrumentation Engineer (PLC/SCADA)')
   const [jobTitle, setJobTitle] = useState('')
   const [notice, setNotice] = useState('')
 
   const [stages, setStages] = useState([
-    { name: 'Applied', count: 12, people: [['Riya Sen', 'Frontend Engineer', 'RS'], ['Kabir Rao', 'Product Designer', 'KR']] },
-    { name: 'Screening', count: 6, people: [['Anaya Iyer', 'Backend Engineer', 'AI'], ['Vihaan Das', 'Data Analyst', 'VD']] },
-    { name: 'Interview', count: 4, people: [['Meera Shah', 'Product Designer', 'MS'], ['Aarav Jain', 'Backend Engineer', 'AJ']] },
-    { name: 'Offer', count: 2, people: [['Zoya Khan', 'Growth Manager', 'ZK']] },
+    { name: 'Applied', count: 12, people: [['Rohan Mishra', 'Instrumentation Engineer', 'RM'], ['Pooja Nair', 'Tendering Specialist', 'PN']] },
+    { name: 'Screening', count: 6, people: [['Naveen Chandra', 'Geotechnical Analyst', 'NC'], ['Vikas Grover', 'Calibration Tech', 'VG']] },
+    { name: 'Interview', count: 4, people: [['Tanvi Deshmukh', 'SCADA Programmer', 'TD'], ['Mohd. Zeeshan', 'Field Service Lead', 'MZ']] },
+    { name: 'Offer', count: 2, people: [['Gaurav Bisht', 'Assistant Sales Manager', 'GB']] },
   ])
 
   const handleAddCandidate = (e: React.FormEvent) => {
@@ -2361,12 +2426,15 @@ function ReportsPage() {
   const [range, setRange] = useState('This year')
   const [notice, setNotice] = useState('')
   const departments = [
-    ['Engineering', 84, 34],
-    ['Sales', 58, 23],
-    ['Operations', 43, 17],
-    ['Design', 31, 13],
-    ['People', 20, 8],
-    ['Finance', 12, 5],
+    ['Engineering Services & Operations', 7, 24],
+    ['Tendering & OEM Coordination', 4, 14],
+    ['Geophysics & Geotechnical', 4, 14],
+    ['Executive Leadership', 4, 14],
+    ['Operations Support', 3, 10],
+    ['Finance & Accounts', 2, 7],
+    ['Materials Testing', 2, 7],
+    ['Pavement Engineering & Marketing', 2, 7],
+    ['Geology & Rock Mechanics', 1, 3],
   ]
 
   return (
@@ -2442,9 +2510,9 @@ function ReportsPage() {
 
 function SettingsPage() {
   const [tab, setTab] = useState<'General' | 'Work' | 'Security'>('General')
-  const [companyName, setCompanyName] = useState('Acme Studio')
-  const [slug, setSlug] = useState('acme-studio')
-  const [email, setEmail] = useState('support@acme.test')
+  const [companyName, setCompanyName] = useState('Complete Instrumentation Solutions Pvt Ltd')
+  const [slug, setSlug] = useState('cis-pvt-ltd')
+  const [email, setEmail] = useState('support@cispl.in')
   const [twoFactor, setTwoFactor] = useState(true)
   const [notice, setNotice] = useState('')
 
@@ -2553,7 +2621,7 @@ function SettingsPage() {
    10. AUTH & SHARED COMPONENTS
    ========================================================================== */
 function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
-  const [email, setEmail] = useState('admin@acme.test')
+  const [email, setEmail] = useState('admin@cispl.in')
   const [password, setPassword] = useState('Admin@123')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -2575,66 +2643,70 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
   return (
     <div className="auth-page">
       <section className="auth-story">
-        <div className="brand auth-brand">
-          <span className="brand-mark"><Sparkles size={19} /></span>
-          <span>peoplely</span>
-        </div>
-        <div className="story-copy">
-          <span>SMART PEOPLE OPERATIONS</span>
-          <h1>Build a workplace where people thrive.</h1>
-          <p>One thoughtful workspace for your team, time, growth, and every important HR moment.</p>
-          <div className="story-stats">
-            <div><strong>248</strong><small>People connected</small></div>
-            <div><strong>94%</strong><small>Team retention</small></div>
-            <div><strong>4.8</strong><small>Employee rating</small></div>
+        <div className="brand auth-brand" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/logo.png" alt="Complete Instrumentation Solutions Logo" style={{ width: 44, height: 44, objectFit: 'contain', background: '#fff', borderRadius: 8, padding: 3 }} />
+          <div>
+            <span style={{ display: 'block', fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>Complete Instrumentation Solutions</span>
+            <small style={{ fontSize: 10, color: '#c7c0ed', fontWeight: 700, letterSpacing: '0.6px' }}>ENTERPRISE WORKSPACE</small>
           </div>
         </div>
-        <p className="story-foot">Trusted by modern people teams</p>
+        <div className="story-copy">
+          <span>COMPLETE INSTRUMENTATION SOLUTIONS PVT LTD</span>
+          <h1>Empowering precision instrumentation & engineering operations.</h1>
+          <p>Complete Instrumentation Solutions Pvt Ltd — unified workspace for workforce, site projects, attendance, and payroll.</p>
+          <div className="story-stats">
+            <div><strong>248</strong><small>Engineers & Staff</small></div>
+            <div><strong>98.4%</strong><small>Uptime & Safety</small></div>
+            <div><strong>4.9</strong><small>Customer Trust</small></div>
+          </div>
+        </div>
+        <p className="story-foot">Trusted by process & automation industries</p>
       </section>
       <main className="auth-main">
         <form className="login-card" onSubmit={submit}>
-          <div className="mobile-brand brand">
-            <span className="brand-mark"><Sparkles size={19} /></span>
-            <span>peoplely</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <img src="/logo.png" alt="CISPL Logo" style={{ width: 42, height: 42, objectFit: 'contain', background: '#fff', border: '1px solid #e5e2f0', borderRadius: 8, padding: 2 }} />
+            <div>
+              <p style={{ margin: 0, fontSize: 9.5, letterSpacing: '1px', color: '#6d5bd0', fontWeight: 800 }}>COMPLETE INSTRUMENTATION SOLUTIONS</p>
+              <h2 style={{ margin: 0, font: '800 20px Manrope', color: '#25222d' }}>Sign in to workspace</h2>
+            </div>
           </div>
-          <p>WELCOME BACK</p>
-          <h2>Sign in to your workspace</h2>
-          <h3>Use your company credentials to continue.</h3>
+          <h3 style={{ margin: '0 0 20px', fontSize: 12, color: '#888496' }}>Use your @cispl.in company credentials to continue.</h3>
           {error && <div className="login-error">{error}</div>}
 
           {/* Quick 1-Click Role Logins */}
           <div style={{ margin: '10px 0 14px', background: '#faf9fd', border: '1px solid #e7e4f2', borderRadius: 10, padding: '10px 12px' }}>
             <span style={{ display: 'block', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.06em', color: '#6d5bd0', marginBottom: 8 }}>
-              QUICK LOGIN ACCOUNTS:
+              QUICK LOGIN ACCOUNTS (@cispl.in):
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
               <button
                 type="button"
                 className="role-chip-btn"
-                onClick={() => { setEmail('admin@acme.test'); setPassword('Admin@123') }}
+                onClick={() => { setEmail('admin@cispl.in'); setPassword('Admin@123') }}
               >
-                👑 Super Admin
+                👑 Director (Neeraj Chadha)
               </button>
               <button
                 type="button"
                 className="role-chip-btn"
-                onClick={() => { setEmail('hr@acme.test'); setPassword('Admin@123') }}
+                onClick={() => { setEmail('hr@cispl.in'); setPassword('Admin@123') }}
               >
-                🧑‍💼 HR Admin (Priya)
+                🧑‍💼 HR Operations
               </button>
               <button
                 type="button"
                 className="role-chip-btn"
-                onClick={() => { setEmail('manager@acme.test'); setPassword('Admin@123') }}
+                onClick={() => { setEmail('manager@cispl.in'); setPassword('Admin@123') }}
               >
-                👨‍💼 Manager (Vikram)
+                👨‍💼 GM Sales (Jitesh Salvi)
               </button>
               <button
                 type="button"
                 className="role-chip-btn"
-                onClick={() => { setEmail('sahil@acme.test'); setPassword('Admin@123') }}
+                onClick={() => { setEmail('sahil@cispl.in'); setPassword('Admin@123') }}
               >
-                👤 Employee (Sahil)
+                💻 Sahil Yadav (Services, Tech Support & Dev)
               </button>
             </div>
           </div>

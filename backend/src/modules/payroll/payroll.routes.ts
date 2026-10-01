@@ -66,10 +66,10 @@ router.get('/:id/payslip', asyncHandler(async (req, res) => {
   const id = z.uuid().parse(req.params.id)
   const isAdmin = payrollAdmins.includes(req.user!.role)
   const employee = isAdmin ? null : await employeeForUser(req.user!.id)
-  const record = await prisma.payroll.findFirst({ where: { id, employee: { companyId: req.user!.companyId }, ...(!isAdmin && { employeeId: employee!.id }) }, include: { employee: { include: { department: true, designation: true } } } })
+  const record = await prisma.payroll.findFirst({ where: { id, employee: { companyId: req.user!.companyId }, ...(!isAdmin && { employeeId: employee!.id }) }, include: { employee: { include: { company: true, department: true, designation: true } } } })
   if (!record || new Set<string>([PayrollStatus.DRAFT, PayrollStatus.CANCELLED]).has(record.status)) throw new HttpError(404, 'Payslip not found')
   const number = (value: Prisma.Decimal) => Number(value)
-  res.json({ company: 'Acme Studio', period: `${record.year}-${String(record.month).padStart(2, '0')}`, employee: record.employee, earnings: { basicSalary: number(record.basicSalary), hra: number(record.hra), allowances: number(record.allowances), bonus: number(record.bonus), overtime: number(record.overtime) }, deductions: { tax: number(record.tax), other: number(record.deductions) }, grossSalary: number(record.grossSalary), netSalary: number(record.netSalary), status: record.status, paidAt: record.paidAt })
+  res.json({ company: record.employee.company?.name || 'Complete Instrumentation Solutions Pvt Ltd', period: `${record.year}-${String(record.month).padStart(2, '0')}`, employee: record.employee, earnings: { basicSalary: number(record.basicSalary), hra: number(record.hra), allowances: number(record.allowances), bonus: number(record.bonus), overtime: number(record.overtime) }, deductions: { tax: number(record.tax), other: number(record.deductions) }, grossSalary: number(record.grossSalary), netSalary: number(record.netSalary), status: record.status, paidAt: record.paidAt })
 }))
 
 export default router

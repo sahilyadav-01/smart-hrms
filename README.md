@@ -1,6 +1,6 @@
-# Smart HRMS
+# Complete Instrumentation Solutions Pvt Ltd — Smart HRMS
 
-A modern HR management workspace for employee records, attendance, leave, payroll, recruitment, documents, and reporting.
+A modern, enterprise-ready HR management and operations workspace built for Complete Instrumentation Solutions Pvt Ltd (CISPL). Features comprehensive workforce management, site & field engineering projects, attendance & biometric check-in, multi-level leave approvals, payroll, and 4 dedicated role portals (Super Admin, HR Admin, Manager, and Employee).
 
 ## Run locally
 
@@ -11,27 +11,26 @@ npm install
 npm run dev
 ```
 
-Then open the local URL printed by Vite.
-
-The frontend opens on a protected sign-in screen. Use the seeded administrator account when the API is running, or choose **Explore the demo workspace** to preview the interface without a database. Set `VITE_API_URL` when the API is hosted somewhere other than `/api/v1`.
-
-Run the complete production-style stack with Docker using `docker compose up --build`. The web application is exposed at `http://localhost:8080`. Set a strong `JWT_SECRET` before deploying.
+Then open `http://localhost:5173`.
 
 ### Database and API
 
+The backend runs on Express + Prisma SQLite with built-in zero-configuration local persistence:
+
 ```bash
-docker compose up -d postgres
 cd backend
-copy .env.example .env
-npm install
-npx prisma migrate dev --name init
 npm run prisma:seed
 npm run dev
 ```
 
 The API runs at `http://localhost:4000`, with health status at `/health` and versioned routes under `/api/v1`.
 
-Demo administrator: `admin@acme.test` / `Admin@123` (development seed only; change this outside local development).
+### Demo Login Accounts (`@cispl.in`):
+- 👑 **Super Admin:** `admin@cispl.in` / `Admin@123`
+- 🧑‍💼 **HR Admin (Priya):** `hr@cispl.in` / `Admin@123`
+- 👨‍💼 **Manager (Vikram):** `manager@cispl.in` / `Admin@123`
+- 👤 **Employee / Engineer (Sahil):** `sahil@cispl.in` / `Admin@123`
+*(Legacy aliases `@acme.test` remain supported for backward compatibility)*
 
 Implemented API routes:
 
