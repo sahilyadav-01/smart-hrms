@@ -274,14 +274,28 @@ function App() {
     }
   }
 
+  const currentUserName = user?.employee
+    ? `${user.employee.firstName} ${user.employee.lastName}`
+    : (user?.email ? user.email.split('@')[0] : 'Sahil Kumar')
+  const currentUserInitials = user?.employee
+    ? `${user.employee.firstName?.[0] || ''}${user.employee.lastName?.[0] || ''}`.toUpperCase()
+    : 'EM'
+
   const roleNameMap: Record<RoleType, string> = {
     SUPER_ADMIN: '👑 Super Admin',
     HR_ADMIN: '🧑‍💼 HR Admin',
     MANAGER: '👨‍💼 Manager',
-    EMPLOYEE: '👤 Employee (Sahil)',
+    EMPLOYEE: `👤 Employee (${user?.employee?.firstName || 'Sahil'})`,
   }
 
-  const isEmployeeView = activeRole === 'EMPLOYEE'
+  const allowedNavs: Page[] = activeRole === 'EMPLOYEE'
+    ? ['Dashboard', 'Attendance', 'Leave', 'Payroll', 'Performance', 'Documents', 'Notifications']
+    : activeRole === 'MANAGER'
+      ? ['Dashboard', 'People', 'Attendance', 'Leave', 'Performance', 'Documents', 'Notifications']
+      : ['Dashboard', 'People', 'Attendance', 'Leave', 'Payroll', 'Recruitment', 'Performance', 'Documents', 'Notifications']
+
+  const visibleNavItems = navItems.filter(item => allowedNavs.includes(item.label))
+  const canSeeManage = ['SUPER_ADMIN', 'HR_ADMIN'].includes(activeRole)
 
   return (
     <div className="app-shell">
@@ -303,7 +317,7 @@ function App() {
 
         <nav>
           <p className="nav-label">WORKSPACE</p>
-          {navItems.map(({ label, icon: Icon }) => (
+          {visibleNavItems.map(({ label, icon: Icon }) => (
             <button
               key={label}
               className={page === label ? 'active' : ''}
@@ -316,27 +330,31 @@ function App() {
               )}
             </button>
           ))}
-          <p className="nav-label nav-spacer">MANAGE</p>
-          <button
-            className={page === 'Reports' ? 'active' : ''}
-            onClick={() => { setPage('Reports'); setMobileOpen(false) }}
-          >
-            <TrendingUp size={19} />
-            <span>Reports</span>
-          </button>
-          <button
-            className={page === 'Settings' ? 'active' : ''}
-            onClick={() => { setPage('Settings'); setMobileOpen(false) }}
-          >
-            <Settings size={19} />
-            <span>Settings</span>
-          </button>
+          {canSeeManage && (
+            <>
+              <p className="nav-label nav-spacer">MANAGE</p>
+              <button
+                className={page === 'Reports' ? 'active' : ''}
+                onClick={() => { setPage('Reports'); setMobileOpen(false) }}
+              >
+                <TrendingUp size={19} />
+                <span>Reports</span>
+              </button>
+              <button
+                className={page === 'Settings' ? 'active' : ''}
+                onClick={() => { setPage('Settings'); setMobileOpen(false) }}
+              >
+                <Settings size={19} />
+                <span>Settings</span>
+              </button>
+            </>
+          )}
         </nav>
 
         <button className="profile" onClick={signOut} title="Sign out">
-          <div className="avatar avatar-dark">SK</div>
+          <div className="avatar avatar-dark">{currentUserInitials}</div>
           <div>
-            <strong>Sahil Kumar</strong>
+            <strong>{currentUserName}</strong>
             <small>{activeRole.replaceAll('_', ' ')} · Sign out</small>
           </div>
           <MoreHorizontal size={18} />
@@ -372,10 +390,10 @@ function App() {
                 value={activeRole}
                 onChange={e => setActiveRole(e.target.value as RoleType)}
               >
-                <option value="HR_ADMIN">🧑‍💼 HR Admin</option>
-                <option value="SUPER_ADMIN">👑 Super Admin</option>
-                <option value="MANAGER">👨‍💼 Manager</option>
-                <option value="EMPLOYEE">👤 Employee (Sahil)</option>
+                <option value="SUPER_ADMIN">👑 Super Admin (Master)</option>
+                <option value="HR_ADMIN">🧑‍💼 HR Admin (People Ops)</option>
+                <option value="MANAGER">👨‍💼 Manager (Team Hub)</option>
+                <option value="EMPLOYEE">👤 Employee (Personal)</option>
               </select>
             </div>
 
@@ -388,8 +406,35 @@ function App() {
 
         <div className="content">
           {page === 'Dashboard' ? (
-            isEmployeeView ? (
+            activeRole === 'SUPER_ADMIN' ? (
+              <SuperAdminDashboard
+                employees={employees}
+                leaveRequests={leaveRequests}
+                dashboardMetrics={dashboardMetrics}
+                onNavigate={p => setPage(p)}
+              />
+            ) : activeRole === 'HR_ADMIN' ? (
+              <HrDashboard
+                employees={employees}
+                leaveRequests={leaveRequests}
+                onApproveLeave={handleApproveLeave}
+                onRejectLeave={handleRejectLeave}
+                onAddEmployee={() => { setPage('People'); setOpenAddEmployee(true) }}
+                onSelectEmployee={emp => setSelectedEmployee(emp)}
+                dashboardMetrics={dashboardMetrics}
+              />
+            ) : activeRole === 'MANAGER' ? (
+              <ManagerDashboard
+                employees={employees}
+                leaveRequests={leaveRequests}
+                onApproveLeave={handleApproveLeave}
+                onRejectLeave={handleRejectLeave}
+                onSelectEmployee={emp => setSelectedEmployee(emp)}
+                onNavigate={p => setPage(p)}
+              />
+            ) : (
               <EmployeeHomeScreen
+                user={user}
                 checkedIn={checkedIn}
                 checkedOut={checkedOut}
                 checkInTime={checkInTime}
@@ -399,16 +444,6 @@ function App() {
                 onPunchIn={handlePunchIn}
                 onPunchOut={handlePunchOut}
                 onNavigate={p => setPage(p)}
-              />
-            ) : (
-              <HrDashboard
-                employees={employees}
-                leaveRequests={leaveRequests}
-                onApproveLeave={handleApproveLeave}
-                onRejectLeave={handleRejectLeave}
-                onAddEmployee={() => { setPage('People'); setOpenAddEmployee(true) }}
-                onSelectEmployee={emp => setSelectedEmployee(emp)}
-                dashboardMetrics={dashboardMetrics}
               />
             )
           ) : (
@@ -430,7 +465,7 @@ function App() {
               checkOutTime={checkOutTime}
               onPunchIn={handlePunchIn}
               onPunchOut={handlePunchOut}
-              isEmployeeView={isEmployeeView}
+              isEmployeeView={activeRole === 'EMPLOYEE'}
             />
           )}
         </div>
@@ -514,9 +549,10 @@ function App() {
    1. EMPLOYEE HOME SCREEN
    ========================================================================== */
 function EmployeeHomeScreen({
-  checkedIn, checkedOut, checkInTime, checkOutTime, workingSeconds, formatSeconds,
+  user, checkedIn, checkedOut, checkInTime, checkOutTime, workingSeconds, formatSeconds,
   onPunchIn, onPunchOut, onNavigate,
 }: {
+  user?: AuthUser | null
   checkedIn: boolean
   checkedOut: boolean
   checkInTime: string
@@ -527,12 +563,14 @@ function EmployeeHomeScreen({
   onPunchOut: () => void
   onNavigate: (p: Page) => void
 }) {
+  const firstName = user?.employee?.firstName || (user?.email ? user.email.split('@')[0] : 'Team Member')
+
   return (
     <>
       <section className="welcome">
         <div>
           <p>THURSDAY, 1 OCTOBER 2026</p>
-          <h1>Good morning, Sahil <span>👋</span></h1>
+          <h1>Good morning, {firstName} <span>👋</span></h1>
           <h2>Here is your personal workday overview, time tracking, and leave status.</h2>
         </div>
         <button className="primary" onClick={() => onNavigate('Leave')}>
@@ -680,7 +718,230 @@ function EmployeeHomeScreen({
 }
 
 /* ==========================================================================
-   2. HR DASHBOARD
+   2A. SUPER ADMIN DASHBOARD
+   ========================================================================== */
+function SuperAdminDashboard({
+  employees, leaveRequests, dashboardMetrics, onNavigate,
+}: {
+  employees: Employee[]
+  leaveRequests: LeaveReq[]
+  dashboardMetrics?: {
+    employees: number
+    present: number
+    onLeave: number
+    absent: number
+    pendingLeaves: number
+    attendanceRate: number
+  } | null
+  onNavigate: (p: Page) => void
+}) {
+  const totalEmployees = dashboardMetrics ? dashboardMetrics.employees : (employees.length || 7)
+
+  const auditEvents = [
+    { time: '14:25:06', user: 'admin@acme.test', action: 'POST /leaves/approve', tag: 'write', label: 'Leave Approved' },
+    { time: '14:24:55', user: 'admin@acme.test', action: 'POST /employees', tag: 'write', label: 'Employee Created' },
+    { time: '14:19:15', user: 'admin@acme.test', action: 'POST /auth/login', tag: 'auth', label: 'JWT Token Issued' },
+    { time: '14:17:41', user: 'SYSTEM', action: 'PRISMA_SEED', tag: 'security', label: 'SQLite DB Initialized' },
+    { time: '09:28:00', user: 'sahil@acme.test', action: 'POST /attendance/check-in', tag: 'auth', label: 'Biometric Clock Punch' },
+  ]
+
+  const departments = [
+    { name: 'Engineering', count: 84, lead: 'Vikram Malhotra', budget: '₹12.4M', status: 'Healthy' },
+    { name: 'People & HR', count: 20, lead: 'Priya Sharma', budget: '₹3.2M', status: 'Healthy' },
+    { name: 'Design', count: 31, lead: 'Ananya Iyer', budget: '₹4.8M', status: 'Healthy' },
+    { name: 'Sales & Growth', count: 58, lead: 'Dev Sharma', budget: '₹8.6M', status: 'Healthy' },
+    { name: 'Finance & Ops', count: 55, lead: 'Sara Ali', budget: '₹6.1M', status: 'Healthy' },
+  ]
+
+  return (
+    <>
+      <section className="welcome">
+        <div>
+          <p>ENTERPRISE CONTROL & GOVERNANCE</p>
+          <h1>Executive Super Admin Center</h1>
+          <h2>System telemetry, organization architecture, security compliance, and audit log.</h2>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="primary" onClick={() => onNavigate('Settings')}><Settings size={18} /> System Settings</button>
+          <button className="quick-action-btn" style={{ height: 40 }} onClick={() => onNavigate('Reports')}><TrendingUp size={18} /> Analytics</button>
+        </div>
+      </section>
+
+      {/* Super Admin Executive KPIs */}
+      <section className="stats-grid four-cols">
+        <Stat icon={Users} label="Total Accounts" value={`${totalEmployees} Active`} delta="6 Departments · 2 Hubs" tone="purple" />
+        <Stat icon={ShieldCheck} label="System Security" value="100%" delta="2FA active · JWT 8h" tone="green" />
+        <Stat icon={CircleDollarSign} label="Monthly Payroll" value="₹9,15,000" delta="Processed for Q3" tone="blue" />
+        <Stat icon={Clock3} label="Engine & Uptime" value="SQLite Live" delta="99.98% Local SLA" tone="teal" />
+      </section>
+
+      {/* Organization Departments Governance & Live Security Audit Feed */}
+      <div className="dash-row">
+        <section className="card">
+          <CardHead title="Department Allocation & Capacity" sub="Enterprise resource units" action="Manage structure" onAction={() => onNavigate('Settings')} />
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Department</th><th>Lead</th><th>Headcount</th><th>Budget</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                {departments.map(d => (
+                  <tr key={d.name}>
+                    <td><strong>{d.name}</strong></td>
+                    <td>{d.lead}</td>
+                    <td><b>{d.count}</b> members</td>
+                    <td>{d.budget}</td>
+                    <td><span className="status approved"><i />{d.status}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="card">
+          <CardHead title="Real-Time System Audit Log" sub="Immutable SQLite events" action="Full audit" onAction={() => onNavigate('Reports')} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 14 }}>
+            {auditEvents.map((evt, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#fcfbfe', border: '1px solid #eeebf6', borderRadius: 8, fontSize: 12 }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                    <span className={`audit-tag ${evt.tag}`}>{evt.tag.toUpperCase()}</span>
+                    <strong>{evt.label}</strong>
+                  </div>
+                  <small style={{ color: '#888' }}>{evt.action} by <code>{evt.user}</code></small>
+                </div>
+                <code style={{ fontSize: 11, color: '#777' }}>{evt.time}</code>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
+  )
+}
+
+/* ==========================================================================
+   2B. MANAGER DASHBOARD
+   ========================================================================== */
+function ManagerDashboard({
+  employees, leaveRequests, onApproveLeave, onRejectLeave, onSelectEmployee, onNavigate,
+}: {
+  employees: Employee[]
+  leaveRequests: LeaveReq[]
+  onApproveLeave: (id: string) => void
+  onRejectLeave: (id: string) => void
+  onSelectEmployee: (emp: Employee) => void
+  onNavigate: (p: Page) => void
+}) {
+  const pendingLeaves = leaveRequests.filter(l => l.status === 'Pending')
+  // Team members reporting to this department / lead
+  const teamMembers = employees.filter(e => e.dept === 'Engineering' || e.dept === 'Design')
+
+  return (
+    <>
+      <section className="welcome">
+        <div>
+          <p>ENGINEERING & DESIGN TEAM HUB</p>
+          <h1>Manager Overview: Vikram Malhotra</h1>
+          <h2>Track your team's shift presence, review time-off requests, and guide sprint performance.</h2>
+        </div>
+        <button className="primary" onClick={() => onNavigate('People')}><Users size={18} /> View team roster</button>
+      </section>
+
+      {/* Manager Team KPIs */}
+      <section className="stats-grid four-cols">
+        <Stat icon={Users} label="My Team Roster" value={`${teamMembers.length} Members`} delta="Engineering & Design" tone="purple" />
+        <Stat icon={Clock3} label="Team Present" value={`${Math.max(1, teamMembers.length - 1)} Active`} delta="87.5% shift coverage" tone="green" />
+        <Stat icon={CalendarDays} label="On Leave / WFH" value="1 Absent" delta="1 Sick leave requested" tone="orange" />
+        <Stat icon={AlertCircle} label="Team Approvals" value={String(pendingLeaves.length)} delta="Pending review" tone="blue" />
+      </section>
+
+      {/* Team Presence Radar & Leave Approvals Queue */}
+      <div className="dash-row">
+        <section className="card">
+          <CardHead title="Direct Reports · Shift Presence" sub="Live workplace status today" action="Team roster" onAction={() => onNavigate('People')} />
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Member</th><th>Role</th><th>Shift Status</th><th>Punch Time</th></tr>
+              </thead>
+              <tbody>
+                {teamMembers.slice(0, 5).map((m, idx) => (
+                  <tr key={m.id} style={{ cursor: 'pointer' }} onClick={() => onSelectEmployee(m)}>
+                    <td>
+                      <div className="user-cell">
+                        <span className={`avatar ${m.tone}`}>{m.initials}</span>
+                        <div><strong>{m.name}</strong><small>{m.email}</small></div>
+                      </div>
+                    </td>
+                    <td>{m.role}</td>
+                    <td>
+                      <span className={`status ${idx === 1 ? 'on-leave' : idx === 2 ? 'remote' : 'active'}`}>
+                        <i />{idx === 1 ? 'On Leave' : idx === 2 ? 'Remote / WFH' : 'In Office'}
+                      </span>
+                    </td>
+                    <td><small>{idx === 1 ? '—' : idx === 2 ? '09:40 AM' : '09:28 AM'}</small></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Pending Team Requests for Manager */}
+        <section className="card">
+          <CardHead
+            title={`Team Leave Requests (${pendingLeaves.length})`}
+            sub="Review applications from your team"
+            action="All leave"
+            onAction={() => onNavigate('Leave')}
+          />
+          {pendingLeaves.length > 0 ? (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Employee</th><th>Type</th><th>Duration</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                  {pendingLeaves.map(r => (
+                    <tr key={r.id}>
+                      <td><strong>{r.employeeName}</strong></td>
+                      <td>{r.leaveType}</td>
+                      <td><small>{r.days}</small></td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button
+                            className="primary"
+                            style={{ height: 28, padding: '0 8px', fontSize: 11 }}
+                            onClick={() => onApproveLeave(r.id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            style={{ height: 28, padding: '0 8px', fontSize: 11, background: '#f5f4f8', border: '1px solid #dcd9e8', borderRadius: 6 }}
+                            onClick={() => onRejectLeave(r.id)}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p style={{ padding: '24px 16px', color: '#888', textAlign: 'center' }}>All team requests have been resolved! 🎉</p>
+          )}
+        </section>
+      </div>
+    </>
+  )
+}
+
+/* ==========================================================================
+   2C. HR DASHBOARD
    ========================================================================== */
 function HrDashboard({
   employees, leaveRequests, onApproveLeave, onRejectLeave, onAddEmployee, onSelectEmployee, dashboardMetrics,
@@ -2340,6 +2601,44 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
           <h2>Sign in to your workspace</h2>
           <h3>Use your company credentials to continue.</h3>
           {error && <div className="login-error">{error}</div>}
+
+          {/* Quick 1-Click Role Logins */}
+          <div style={{ margin: '10px 0 14px', background: '#faf9fd', border: '1px solid #e7e4f2', borderRadius: 10, padding: '10px 12px' }}>
+            <span style={{ display: 'block', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.06em', color: '#6d5bd0', marginBottom: 8 }}>
+              QUICK LOGIN ACCOUNTS:
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+              <button
+                type="button"
+                className="role-chip-btn"
+                onClick={() => { setEmail('admin@acme.test'); setPassword('Admin@123') }}
+              >
+                👑 Super Admin
+              </button>
+              <button
+                type="button"
+                className="role-chip-btn"
+                onClick={() => { setEmail('hr@acme.test'); setPassword('Admin@123') }}
+              >
+                🧑‍💼 HR Admin (Priya)
+              </button>
+              <button
+                type="button"
+                className="role-chip-btn"
+                onClick={() => { setEmail('manager@acme.test'); setPassword('Admin@123') }}
+              >
+                👨‍💼 Manager (Vikram)
+              </button>
+              <button
+                type="button"
+                className="role-chip-btn"
+                onClick={() => { setEmail('sahil@acme.test'); setPassword('Admin@123') }}
+              >
+                👤 Employee (Sahil)
+              </button>
+            </div>
+          </div>
+
           <label>Work email
             <input
               type="email"
@@ -2368,11 +2667,16 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => void }) {
           <button className="login-submit" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
-          <div className="divider"><span>or</span></div>
-          <button className="demo-submit" type="button" onClick={() => onLogin(authService.demo())}>
-            Explore the demo workspace
-          </button>
-          <small className="demo-note">Demo data stays in your browser. No server required.</small>
+          <div className="divider"><span>or explore demo roles</span></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+            <button className="demo-submit" style={{ padding: '8px 10px', fontSize: 11.5 }} type="button" onClick={() => onLogin(authService.demo('HR_ADMIN'))}>
+              🧑‍💼 HR Admin Demo
+            </button>
+            <button className="demo-submit" style={{ padding: '8px 10px', fontSize: 11.5 }} type="button" onClick={() => onLogin(authService.demo('EMPLOYEE'))}>
+              👤 Employee Demo
+            </button>
+          </div>
+          <small className="demo-note">Connected to live SQLite database. Password for all: Admin@123</small>
         </form>
       </main>
     </div>

@@ -164,3 +164,37 @@ h1 { font:800 28px Manrope;margin:0;color:#22202b;letter-spacing:-.7px; }
   background: #f59e0b;
   box-shadow: 0 0 6px #f59e0b;
 }
+
+.role-chip-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f7f6fb;
+  border: 1px solid #e2dfec;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #3b354d;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.role-chip-btn:hover {
+  background: #edeaf8;
+  border-color: #6d5bd0;
+  color: #5142a7;
+  transform: translateY(-1px);
+}
+.audit-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.audit-tag.auth { background: #e0f2fe; color: #0284c7; }
+.audit-tag.write { background: #fef3c7; color: #d97706; }
+.audit-tag.security { background: #dcfce7; color: #16a34a; }
+
