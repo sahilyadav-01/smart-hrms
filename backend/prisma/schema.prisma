@@ -1,0 +1,115 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+enum Role { SUPER_ADMIN HR_ADMIN HR_MANAGER MANAGER EMPLOYEE RECRUITER }
+enum EmployeeStatus { ONBOARDING ACTIVE PROBATION CONFIRMED RESIGNED TERMINATED }
+enum EmploymentType { FULL_TIME PART_TIME CONTRACT INTERN }
+enum AttendanceStatus { PRESENT ABSENT LATE ON_LEAVE WORK_FROM_HOME HALF_DAY }
+enum LeaveStatus { PENDING MANAGER_APPROVED APPROVED REJECTED CANCELLED }
+
+model Company {
+  id String @id @default(uuid())
+  name String
+  slug String @unique
+  users User[]
+  employees Employee[]
+  departments Department[]
+  designations Designation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  passwordHash String
+  role Role @default(EMPLOYEE)
+  isActive Boolean @default(true)
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee Employee?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([companyId])
+}
+
+model Department {
+  id String @id @default(uuid())
+  name String
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employees Employee[]
+  @@unique([companyId, name])
+}
+
+model Designation {
+  id String @id @default(uuid())
+  title String
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employees Employee[]
+  @@unique([companyId, title])
+}
+
+model Employee {
+  id String @id @default(uuid())
+  employeeCode String
+  firstName String
+  lastName String
+  email String
+  phone String?
+  joiningDate DateTime
+  status EmployeeStatus @default(ACTIVE)
+  employmentType EmploymentType @default(FULL_TIME)
+  companyId String
+  departmentId String?
+  designationId String?
+  managerId String?
+  userId String? @unique
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id])
+  designation Designation? @relation(fields: [designationId], references: [id])
+  manager Employee? @relation("EmployeeManager", fields: [managerId], references: [id])
+  reports Employee[] @relation("EmployeeManager")
+  user User? @relation(fields: [userId], references: [id])
+  attendance Attendance[]
+  leaveRequests LeaveRequest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([companyId, employeeCode])
+  @@unique([companyId, email])
+  @@index([companyId, departmentId])
+}
+
+model Attendance {
+  id String @id @default(uuid())
+  date DateTime @db.Date
+  checkIn DateTime?
+  checkOut DateTime?
+  status AttendanceStatus @default(PRESENT)
+  employeeId String
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([employeeId, date])
+}
+
+model LeaveType {
+  id String @id @default(uuid())
+  name String
+  daysPerYear Int
+  requests LeaveRequest[]
+}
+
+model LeaveRequest {
+  id String @id @default(uuid())
+  startDate DateTime @db.Date
+  endDate DateTime @db.Date
+  reason String
+  status LeaveStatus @default(PENDING)
+  employeeId String
+  leaveTypeId String
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
