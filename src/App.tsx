@@ -398,6 +398,26 @@ function EmployeeHomeScreen({
         </button>
       </section>
 
+      {/* Twin Cards matching ASCII vision */}
+      <div className="twin-cards">
+        <div
+          className="twin-card action"
+          onClick={checkedIn && !checkedOut ? onPunchOut : onPunchIn}
+          title="Click to check in or out"
+        >
+          <p>ATTENDANCE ACTION</p>
+          <strong>{checkedOut ? 'DAY COMPLETED' : checkedIn ? 'CHECK OUT' : 'CHECK IN'}</strong>
+          <span><i />{checkedOut ? 'Shift Done' : checkedIn ? '🟢 Working' : 'Tap to start shift'}</span>
+        </div>
+        <div className="twin-card">
+          <p>CURRENT TIME & STATUS</p>
+          <strong>{checkedIn ? checkInTime : '09:00 AM'}</strong>
+          <span className={checkedIn && !checkedOut ? '' : 'waiting'}>
+            <i />{checkedOut ? 'Completed' : checkedIn ? '🟢 Working' : 'Standard shift'}
+          </span>
+        </div>
+      </div>
+
       {/* Quick Action Shortcuts */}
       <section className="quick-actions">
         <button className="quick-action-btn" onClick={() => onNavigate('Leave')}>
@@ -452,7 +472,7 @@ function EmployeeHomeScreen({
 
         {/* Today's Log Card */}
         <div className="card today-log">
-          <CardHead title="Today's Attendance" sub="1 October 2026 · Standard Shift" action="View details" onAction={() => onNavigate('Attendance')} />
+          <CardHead title="Today's Attendance" sub="1 October 2026 · Standard Shift" action="Full log" onAction={() => onNavigate('Attendance')} />
           <div className="today-log-row">
             <span><Sun size={16} /> Check In</span>
             <strong>{checkInTime}</strong>
@@ -462,7 +482,7 @@ function EmployeeHomeScreen({
             <strong>{checkOutTime}</strong>
           </div>
           <div className="today-log-row">
-            <span><TrendingUp size={16} /> Working Duration</span>
+            <span><TrendingUp size={16} /> Working</span>
             <strong>{Math.floor(workingSeconds / 3600)}h {Math.floor((workingSeconds % 3600) / 60)}m</strong>
           </div>
           <div className="today-log-row">
@@ -473,33 +493,33 @@ function EmployeeHomeScreen({
       </section>
 
       {/* Leave Balances Grid */}
-      <h3 style={{ font: '800 16px Manrope', margin: '26px 0 14px' }}>My Leave Balances</h3>
+      <h3 style={{ font: '800 16px Manrope', margin: '26px 0 14px' }}>Leave Balance</h3>
       <section className="leave-balances">
         <div className="card balance-card">
           <span className="balance-icon purple"><CalendarDays size={18} /></span>
-          <div><p>Casual Leave</p><strong>8 Days</strong><small> of 12 days left</small></div>
+          <div><p>Casual Leave</p><strong>8 Days</strong><small> of 12 days</small></div>
           <div className="balance-track"><i style={{ width: '66%' }} /></div>
         </div>
         <div className="card balance-card">
           <span className="balance-icon green"><CalendarDays size={18} /></span>
-          <div><p>Sick Leave</p><strong>5 Days</strong><small> of 10 days left</small></div>
+          <div><p>Sick Leave</p><strong>5 Days</strong><small> of 10 days</small></div>
           <div className="balance-track"><i style={{ width: '50%' }} /></div>
         </div>
         <div className="card balance-card">
           <span className="balance-icon blue"><CalendarDays size={18} /></span>
-          <div><p>Earned Leave</p><strong>14 Days</strong><small> of 18 days left</small></div>
+          <div><p>Earned Leave</p><strong>14 Days</strong><small> of 18 days</small></div>
           <div className="balance-track"><i style={{ width: '77%' }} /></div>
         </div>
         <div className="card balance-card">
           <span className="balance-icon orange"><CalendarDays size={18} /></span>
-          <div><p>Work from Home</p><strong>20 Days</strong><small> of 24 days left</small></div>
+          <div><p>Work from Home</p><strong>20 Days</strong><small> of 24 days</small></div>
           <div className="balance-track"><i style={{ width: '83%' }} /></div>
         </div>
       </section>
 
       {/* Upcoming Holidays Section */}
       <section className="card holiday-card" style={{ marginTop: '20px' }}>
-        <CardHead title="Upcoming Company Holidays" sub="Official 2026 Calendar" action="Full schedule" />
+        <CardHead title="Upcoming Holidays" sub="Official 2026 Calendar" action="Full schedule" />
         {upcomingHolidays.map(h => (
           <article key={h.name}>
             <div>
@@ -532,6 +552,15 @@ function HrDashboard({
 }) {
   const pendingLeaves = leaveRequests.filter(l => l.status === 'Pending')
 
+  const departments = [
+    ['Engineering', 84, 34],
+    ['Sales', 58, 23],
+    ['Operations', 43, 17],
+    ['Design', 31, 13],
+    ['People', 20, 8],
+    ['Finance', 12, 5],
+  ]
+
   return (
     <>
       <section className="welcome">
@@ -543,21 +572,22 @@ function HrDashboard({
         <button className="primary" onClick={onAddEmployee}><UserRoundPlus size={18} /> Add employee</button>
       </section>
 
-      {/* High-level HR KPI metrics as requested */}
-      <section className="stats-grid">
-        <Stat icon={Users} label="Total Employees" value="248" delta="+12 this month" tone="purple" />
-        <Stat icon={Clock3} label="Present Today" value="231" delta="93.1% attendance" tone="green" />
-        <Stat icon={CalendarDays} label="On Leave" value="12" delta="Planned absence" tone="orange" />
-        <Stat icon={AlertCircle} label="Absent" value="5" delta="Requires manager review" tone="pink" />
+      {/* High-level HR KPI metrics - Exact 5 metrics requested */}
+      <section className="stats-grid five-cols">
+        <Stat icon={Users} label="Employees" value="248" delta="+12 this month" tone="purple" />
+        <Stat icon={Clock3} label="Present" value="231" delta="93.1% present" tone="green" />
+        <Stat icon={CalendarDays} label="On Leave" value="12" delta="Approved absence" tone="orange" />
+        <Stat icon={AlertCircle} label="Absent" value="5" delta="Unscheduled" tone="pink" />
+        <Stat icon={CalendarDays} label="Pending Leaves" value={String(pendingLeaves.length || 7)} delta="Requires review" tone="blue" />
       </section>
 
       {/* Pending Leave Approvals Queue */}
       {pendingLeaves.length > 0 && (
         <section className="card" style={{ marginBottom: '20px', borderLeft: '4px solid #6d5bd0' }}>
           <CardHead
-            title={`Pending Leave Approvals (${pendingLeaves.length})`}
-            sub="Requests awaiting your review and authorization"
-            action="View all requests"
+            title={`Pending Leave Requests (${pendingLeaves.length})`}
+            sub="Review and approve employee applications"
+            action="All requests"
           />
           <div className="table-wrap">
             <table>
@@ -567,7 +597,7 @@ function HrDashboard({
                   <th>Leave Type</th>
                   <th>Dates</th>
                   <th>Reason</th>
-                  <th>Actions</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -589,10 +619,10 @@ function HrDashboard({
         </section>
       )}
 
-      {/* Attendance Chart & Activity */}
+      {/* Attendance Chart & Department Statistics */}
       <section className="dashboard-grid">
         <div className="card chart-card">
-          <CardHead title="Weekly Attendance Trend" sub="Daily presence across all departments" action="This week" />
+          <CardHead title="Attendance Chart" sub="Daily presence across all departments" action="This week" />
           <div className="legend">
             <span><i className="dot purple-dot" />Present</span>
             <span><i className="dot pale-dot" />Away / Remote</span>
@@ -609,32 +639,54 @@ function HrDashboard({
           </div>
         </div>
 
-        <div className="card activity-card">
-          <CardHead title="Recent People Moments" sub="Company-wide updates" action="View log" />
-          <div className="activity-list">
-            <div className="activity">
-              <span className="activity-icon purple"><UserRoundPlus size={18} /></span>
-              <div><strong>Maya Patel joined as Staff Designer</strong><small>Design team · 2 hours ago</small></div>
-            </div>
-            <div className="activity">
-              <span className="activity-icon green"><Check size={18} /></span>
-              <div><strong>September Payroll Disbursed</strong><small>248 employees credited · Yesterday</small></div>
-            </div>
-            <div className="activity">
-              <span className="activity-icon orange"><BriefcaseBusiness size={18} /></span>
-              <div><strong>New Opening: Senior Backend Engineer</strong><small>Engineering · Published 2 days ago</small></div>
-            </div>
+        <div className="card dept-chart">
+          <CardHead title="Department Statistics" sub="Workforce distribution" action="248 total" />
+          <div className="dept-list">
+            {departments.map(([name, count, pct]) => (
+              <div key={name}>
+                <span>{name}<b>{count} ({pct}%)</b></span>
+                <div><i style={{ width: `${pct}%` }} /></div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Employee Quick Roster */}
+      {/* Recruitment Status & Payroll Summary Grid */}
+      <section className="dashboard-grid" style={{ marginBottom: 20 }}>
+        <div className="card" style={{ padding: 20 }}>
+          <CardHead title="Recruitment Status" sub="Current talent acquisition funnel" action="8 open roles" />
+          <div className="funnel-bars" style={{ padding: 0 }}>
+            {[['Applied', 156], ['Screening', 92], ['Interview', 48], ['Offer', 18], ['Hired', 12]].map(([stage, count], i) => (
+              <div key={stage} style={{ margin: '10px 0' }}>
+                <span>{stage}</span>
+                <i style={{ width: `${100 - i * 15}%` }} />
+                <strong>{count}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card payroll-breakdown" style={{ padding: 20 }}>
+          <CardHead title="Payroll Summary" sub="October 2026 Disbursal" action="Details" />
+          <div className="donut" style={{ margin: '10px auto' }}>
+            <div><strong>₹21.2L</strong><small>Gross</small></div>
+          </div>
+          <ul>
+            <li><i className="earnings" />Basic Salaries <strong>₹14.1L</strong></li>
+            <li><i className="benefits" />Allowances & HRA <strong>₹7.1L</strong></li>
+            <li><i className="deductions" />PF & Deductions <strong>₹2.8L</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      {/* New Employees & Active Directory */}
       <section className="card team-card">
-        <CardHead title="Active Directory" sub="Quick glance at team profiles (Click row to inspect)" action="All 248" />
+        <CardHead title="New Employees & Directory" sub="Click any profile to inspect complete record" action="All 248" />
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Employee</th><th>Department</th><th>Role</th><th>Status</th><th></th></tr>
+              <tr><th>Employee</th><th>Department</th><th>Role</th><th>Status</th><th>Inspect</th></tr>
             </thead>
             <tbody>
               {employees.slice(0, 5).map(e => (

@@ -127,4 +127,20 @@ h1 { font:800 28px Manrope;margin:0;color:#22202b;letter-spacing:-.7px; }
 
 @media(max-width:900px){.employee-grid{grid-template-columns:1fr}.quick-actions{grid-template-columns:1fr}}
 
+/* Twin cards matching ASCII vision */
+.twin-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.twin-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;box-shadow:0 3px 8px #201a350a}
+.twin-card.action{cursor:pointer;background:#faf9ff;border-color:#d5cef5;transition:.15s}
+.twin-card.action:hover{border-color:#6d5bd0;background:#f2effe;transform:translateY(-1px)}
+.twin-card p{margin:0 0 6px;font-size:11px;font-weight:700;color:#676372;letter-spacing:1px}
+.twin-card strong{display:block;font:800 28px/1.2 Manrope;color:#282436}
+.twin-card span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-top:8px;color:#27855b}
+.twin-card span.waiting{color:#8f8b9a}
+.twin-card span i{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+.stats-grid.five-cols{grid-template-columns:repeat(5,1fr)}
+@media(max-width:1150px){.stats-grid.five-cols{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.stats-grid.five-cols{grid-template-columns:repeat(2,1fr)}}
+
+
 
