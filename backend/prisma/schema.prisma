@@ -1,11 +1,53 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum Role { SUPER_ADMIN HR_ADMIN HR_MANAGER MANAGER EMPLOYEE RECRUITER }
-enum EmployeeStatus { ONBOARDING ACTIVE PROBATION CONFIRMED RESIGNED TERMINATED }
-enum EmploymentType { FULL_TIME PART_TIME CONTRACT INTERN }
-enum AttendanceStatus { PRESENT ABSENT LATE ON_LEAVE WORK_FROM_HOME HALF_DAY }
-enum LeaveStatus { PENDING MANAGER_APPROVED APPROVED REJECTED CANCELLED }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  HR_ADMIN
+  HR_MANAGER
+  MANAGER
+  EMPLOYEE
+  RECRUITER
+}
+
+enum EmployeeStatus {
+  ONBOARDING
+  ACTIVE
+  PROBATION
+  CONFIRMED
+  RESIGNED
+  TERMINATED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  ON_LEAVE
+  WORK_FROM_HOME
+  HALF_DAY
+}
+
+enum LeaveStatus {
+  PENDING
+  MANAGER_APPROVED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
 
 model Company {
   id String @id @default(uuid())
