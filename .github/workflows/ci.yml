@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - name: Build frontend
+        run: npm ci && npm run build
+      - name: Verify backend
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/smart_hrms_test
+          JWT_SECRET: ci-secret-that-is-at-least-thirty-two-characters
+          CORS_ORIGIN: http://localhost:5173
+        run: npm ci && npx prisma generate && npm run build && npm test

@@ -14,6 +14,7 @@ const employeeSchema = z.object({
   employeeCode: z.string().min(2).max(30), firstName: z.string().min(2), lastName: z.string().min(2),
   email: z.email(), phone: z.string().optional(), joiningDate: z.coerce.date(),
   departmentId: z.string().uuid().optional(), designationId: z.string().uuid().optional(), managerId: z.string().uuid().optional(),
+  locationId: z.string().uuid().optional(),
   employmentType: z.enum(EmploymentType).default(EmploymentType.FULL_TIME), status: z.enum(EmployeeStatus).default(EmployeeStatus.ACTIVE),
 })
 
@@ -21,7 +22,7 @@ router.get('/', asyncHandler(async (req, res) => {
   const query = typeof req.query.search === 'string' ? req.query.search : ''
   const employees = await prisma.employee.findMany({
     where: { companyId: req.user!.companyId, ...(query && { OR: [{ firstName: { contains: query, mode: 'insensitive' } }, { lastName: { contains: query, mode: 'insensitive' } }, { email: { contains: query, mode: 'insensitive' } }] }) },
-    include: { department: true, designation: true }, orderBy: { createdAt: 'desc' },
+    include: { department: true, designation: true, location: true }, orderBy: { createdAt: 'desc' },
   })
   res.json({ data: employees, total: employees.length })
 }))

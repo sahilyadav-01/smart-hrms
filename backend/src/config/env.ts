@@ -8,6 +8,7 @@ const schema = z.object({
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default('8h'),
   CORS_ORIGIN: z.string().url().default('http://localhost:5173'),
+  TRUST_PROXY: z.coerce.number().int().min(0).max(3).default(0),
 })
 
 const result = schema.safeParse(process.env)
